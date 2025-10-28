@@ -1,4 +1,4 @@
-package com.soundhub.model;
+package soundhub.Model;
 
 public enum Role {
     ARTIST,

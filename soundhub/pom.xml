@@ -8,7 +8,7 @@
         <version>3.5.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.soundhub</groupId>
+    <groupId>soundhub</groupId>
     <artifactId>soundhub</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>soundhub</name>
