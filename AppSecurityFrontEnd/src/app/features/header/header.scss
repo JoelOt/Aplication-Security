@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Sigmar+One&display=swap');
+
+:host {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.header-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background: #2b2b2b;
+    
+    .menu-container{
+        min-width: 200px; // Tamaño fijo mínimo
+        width: auto; // Se ajusta al contenido
+        height: 100%;
+        display: flex;
+        flex-shrink: 0; // No se encoge
+        
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            margin: auto 0 auto 10px;
+        }
+        
+        .name-container {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;    
+        }
+
+        .menu-text {
+            color: #8a8a8a;
+            font-size: 2rem;
+            font-family: 'Sigmar One', cursive;
+            white-space: nowrap; // Evita que el texto se parta
+        }
+    }
+    
+    .searchbar-container{
+        flex: 1; // Ocupa todo el espacio disponible
+        min-width: 200px; // Ancho mínimo para que sea usable
+        height: 100%;
+        display: flex;
+
+        .searchbar {
+            width: 80%;
+            height: 60%;
+            margin: auto;
+            border-radius: 10px;
+
+            .searchbar-input {
+                width: 100%;
+                height: 100%;
+                border: none;
+                border-radius: 10px;
+                padding: 0 10px;
+                font-size: 16px;
+                background-color: #707070;
+
+                 &:focus {
+                    outline: none;
+                    border: none; 
+                }
+
+                &::placeholder {
+                    color: #000000;
+                    opacity: 1;
+                }
+            
+            }
+        }
+
+    }
+    
+    .profile-container{
+        min-width: 60px; // Tamaño fijo mínimo
+        width: 80px;
+        height: 100%;
+        display: flex;
+        flex-shrink: 0; // No se encoge
+
+        .profile-icon {
+            margin: auto;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #707070;
+            padding: 5px 5px 5px 5px;
+            transition: background-color 300ms ease; // Mover aquí
+
+            .profile-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8a8a8a;
+            }
+        }
+    }
+    
+}

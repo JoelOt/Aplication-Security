@@ -1,0 +1,43 @@
+<div class="media-player-container">
+    <!-- Sección izquierda: Info de la canción -->
+    <div class="track-info">
+        <img src="/song-cover.jpg" alt="Album Cover" class="album-cover" />
+        <div class="track-details">
+            <span class="track-name">{{ trackName }}</span>
+            <span class="artist-name">{{ artistName }}</span>
+        </div>
+        <span class="material-symbols-outlined favorite-icon">
+            favorite
+        </span>
+    </div>
+
+    <!-- Sección central: Controles y barra de progreso -->
+    <div class="player-controls">
+        <div class="control-buttons">
+            <span class="material-symbols-outlined control-btn">shuffle</span>
+            <span class="material-symbols-outlined control-btn" (click)="skipPrevious()">skip_previous</span>
+            <span class="material-symbols-outlined control-btn play-btn" (click)="togglePlay()">
+                {{ isPlaying ? 'pause_circle' : 'play_circle' }}
+            </span>
+            <span class="material-symbols-outlined control-btn" (click)="skipNext()">skip_next</span>
+            <span class="material-symbols-outlined control-btn">repeat</span>
+        </div>
+        
+        <div class="progress-bar-container">
+            <span class="time-current">{{ currentTime }}</span>
+            <div class="progress-bar" (click)="seekTrack($event)">
+                <div class="progress-fill" [style.width.%]="progress"></div>
+                <div class="progress-handle" [style.left.%]="progress"></div>
+            </div>
+            <span class="time-total">{{ totalTime }}</span>
+        </div>
+    </div>
+
+    <!-- Sección derecha: Controles de volumen -->
+    <div class="volume-controls">
+        <span class="material-symbols-outlined volume-icon">volume_up</span>
+        <div class="volume-bar" (click)="setVolume($event)">
+            <div class="volume-fill" [style.width.%]="volume"></div>
+        </div>
+    </div>
+</div>
