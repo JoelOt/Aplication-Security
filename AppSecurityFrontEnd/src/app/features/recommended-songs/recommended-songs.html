@@ -1,0 +1,18 @@
+<div class="recommended-songs-container">
+  <h2 class="section-title">Recommended for you</h2>
+  
+  <div class="songs-grid">
+    <div class="song-card" *ngFor="let song of recommendedSongs">
+      <div class="song-image-container">
+        <img [src]="song.coverImage" [alt]="song.title" class="song-image" />
+        <div class="play-button-overlay">
+          <span class="material-symbols-outlined play-icon">play_circle</span>
+        </div>
+      </div>
+      <div class="song-info">
+        <h3 class="song-title">{{ song.title }}</h3>
+        <p class="song-artist">{{ song.artist }}</p>
+      </div>
+    </div>
+  </div>
+</div>

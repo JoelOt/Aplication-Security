@@ -76,11 +76,22 @@
     }
     
     .profile-container{
-        min-width: 60px; // Tamaño fijo mínimo
-        width: 80px;
+        width: 210px;
         height: 100%;
         display: flex;
         flex-shrink: 0; // No se encoge
+
+        .username-container {
+            display: flex;
+            align-items: center;
+            margin: auto 0 auto 10px;
+
+            .username-text {
+                color: #bebebe;
+                font-size: 16px;
+                white-space: nowrap; // Evita que el texto se parta
+            }
+        }
 
         .profile-icon {
             margin: auto;
