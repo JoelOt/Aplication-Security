@@ -33,5 +33,7 @@ build/
 .vscode/
 
 ### DDBB ###
-/storage/audio/uploads/**
-/storage/covers/uploads/**
+/storage/**
+!/storage/
+!/storage/*/
+!/storage/*/[1-4].*
