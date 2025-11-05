@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### DDBB ###
+/storage/audio/uploads/**
+/storage/covers/uploads/**
