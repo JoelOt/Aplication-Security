@@ -1,6 +1,6 @@
 -- ===== USERS (key = username) =====
 INSERT INTO users (name, surname, username, password, role)
-SELECT 'Admin','One','admin1','5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8','ADMIN'
+SELECT 'Admin','One','admin1','5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8','REGULAR'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='admin1');
 
 INSERT INTO users (name, surname, username, password, role)
@@ -16,11 +16,11 @@ SELECT 'Twenty One','Pilots','twentyonepilots','9f8e7d6c5b4a39281706f5e4d3c2b1a0
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='twentyonepilots');
 
 INSERT INTO users (name, surname, username, password, role)
-SELECT 'Alice','Doe','alice_user','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','USER'
+SELECT 'Alice','Doe','alice_user','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','REGULAR'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='alice_user');
 
 INSERT INTO users (name, surname, username, password, role)
-SELECT 'Bob','Doe','bob_user','3c7a3e4b0fd4b9c2a17f861e72fe3a5c5e2d1b4a6978c3d5f0a1b2c3d4e5f607','USER'
+SELECT 'Bob','Doe','bob_user','3c7a3e4b0fd4b9c2a17f861e72fe3a5c5e2d1b4a6978c3d5f0a1b2c3d4e5f607','REGULAR'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='bob_user');
 
 -- ===== AUDIO_POST (key = user_id + title) =====
