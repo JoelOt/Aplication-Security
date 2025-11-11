@@ -1,26 +1,26 @@
 -- ===== USERS (key = username) =====
-INSERT INTO users (name, surname, username, password, role)
-SELECT 'Admin','One','admin1','5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8','REGULAR'
+INSERT INTO users (name, surname, username, dni, age, password, role)
+SELECT 'Admin','One','admin1','ID-ADM-0001', 34, '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8','REGULAR'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='admin1');
 
-INSERT INTO users (name, surname, username, password, role)
-SELECT 'Coldplay','Band','coldplay','a3f1c4e9b28d7f6a5c0e1d2b3a4f59687c9d0e1f2a3b4c5d6e7f8091a2b3c4d5','ARTIST'
+INSERT INTO users (name, surname, username, dni, age, password, role)
+SELECT 'Coldplay','Band','coldplay','ID-CLDP-0002', 26, 'a3f1c4e9b28d7f6a5c0e1d2b3a4f59687c9d0e1f2a3b4c5d6e7f8091a2b3c4d5','ARTIST'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='coldplay');
 
-INSERT INTO users (name, surname, username, password, role)
-SELECT 'The Beatles','Band','beatles','c1d2e3f40516273849a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9012','ARTIST'
+INSERT INTO users (name, surname, username, dni, age, password, role)
+SELECT 'The Beatles','Band','beatles','ID-BTLS-0003', 28, 'c1d2e3f40516273849a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9012','ARTIST'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='beatles');
 
-INSERT INTO users (name, surname, username, password, role)
-SELECT 'Twenty One','Pilots','twentyonepilots','9f8e7d6c5b4a39281706f5e4d3c2b1a0ffeeddccbbaa99887766554433221100','ARTIST'
+INSERT INTO users (name, surname, username, dni, age, password, role)
+SELECT 'Twenty One','Pilots','twentyonepilots','ID-TOP-0004', 27, '9f8e7d6c5b4a39281706f5e4d3c2b1a0ffeeddccbbaa99887766554433221100','ARTIST'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='twentyonepilots');
 
-INSERT INTO users (name, surname, username, password, role)
-SELECT 'Alice','Doe','alice_user','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','REGULAR'
+INSERT INTO users (name, surname, username, dni, age, password, role)
+SELECT 'Alice','Doe','alice_user','ID-ALC-0005', 22, '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','REGULAR'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='alice_user');
 
-INSERT INTO users (name, surname, username, password, role)
-SELECT 'Bob','Doe','bob_user','3c7a3e4b0fd4b9c2a17f861e72fe3a5c5e2d1b4a6978c3d5f0a1b2c3d4e5f607','REGULAR'
+INSERT INTO users (name, surname, username, dni, age, password, role)
+SELECT 'Bob','Doe','bob_user','ID-BOB-0006', 24, '3c7a3e4b0fd4b9c2a17f861e72fe3a5c5e2d1b4a6978c3d5f0a1b2c3d4e5f607','REGULAR'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='bob_user');
 
 -- ===== AUDIO_POST (key = user_id + title) =====
