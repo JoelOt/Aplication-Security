@@ -1,4 +1,4 @@
-package soundhub.Model;
+package soundhub.model;
 
 
 import jakarta.persistence.*;
