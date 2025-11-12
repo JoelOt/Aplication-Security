@@ -1,48 +1,129 @@
 package soundhub.service;
 
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import soundhub.model.AudioPost;
-import soundhub.model.Users;
+import org.springframework.web.multipart.MultipartFile;
+import soundhub.dto.AudioPostRequest;
+import soundhub.dto.AudioPostResponse;
+import soundhub.entity.AudioPost;
+import soundhub.entity.Users;
 import soundhub.repository.AudioPostRepository;
+import soundhub.repository.UserRepository;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class AudioPostService {
 
     private final AudioPostRepository audioPostRepository;
+    private final UserRepository userRepository;
 
-    public AudioPostService(AudioPostRepository audioPostRepository) {
-        this.audioPostRepository = audioPostRepository;
+    private final String audioDir = "soundhub/storage/audio/";
+    private final String coverDir = "soundhub/storage/covers/";
+
+    public AudioPostResponse uploadAudioPost(int userId, AudioPostRequest request) throws IOException {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Validate file extensions and size
+        validateFiles(request.coverFile(), request.audioFile());
+
+        // Metadata cleaning could go here (strip tags, sanitize filenames)
+        String coverPath = saveFile(request.coverFile(), coverDir);
+        String audioPath = saveFile(request.audioFile(), audioDir);
+
+        AudioPost post = new AudioPost();
+        post.setUser(user);
+        post.setTitle(request.title());
+        post.setDescription(request.description());
+        post.setGenre(request.genre());
+        post.setCover(coverPath);
+        post.setAudio(audioPath);
+
+        AudioPost saved = audioPostRepository.save(post);
+
+        return new AudioPostResponse(
+                saved.getId(),
+                saved.getTitle(),
+                saved.getDescription(),
+                saved.getGenre(),
+                saved.getCover(),
+                saved.getAudio(),
+                user.getUsername()
+        );
     }
 
-    public AudioPost createAudioPost(AudioPost audioPost) {
-        return audioPostRepository.save(audioPost);
-    }
+    public void deleteAudioPost(int userId, Long postId) {
+        AudioPost post = audioPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("AudioPost not found"));
 
-    public void deleteAudioPost(Long id, Users user) {
-        AudioPost post = audioPostRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Audio post not found"));
-
-        if (!post.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("You can only delete your own posts");
+        if (post.getUser().getId() != userId) {
+            throw new SecurityException("Cannot delete another user's post");
         }
+
+        new File(coverDir + post.getCover());
+        new File(audioDir + post.getAudio());
 
         audioPostRepository.delete(post);
     }
 
-    public List<AudioPost> getAllAudioPosts() {
-        return audioPostRepository.findAll();
+    public List<AudioPostResponse> getUserAudioPosts(int userId) {
+        return audioPostRepository.findByUserId(userId).stream()
+                .map(p -> new AudioPostResponse(
+                        p.getId(),
+                        p.getTitle(),
+                        p.getDescription(),
+                        p.getGenre(),
+                        p.getCover(),
+                        p.getAudio(),
+                        p.getUser().getUsername()
+                ))
+                .toList();
     }
 
-    public Optional<AudioPost> getAudioPostById(Long id) {
-        return audioPostRepository.findById(id);
+    public AudioPostResponse getAudioPost(Long postId) {
+        AudioPost p = audioPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("AudioPost not found"));
+
+        return new AudioPostResponse(
+                p.getId(),
+                p.getTitle(),
+                p.getDescription(),
+                p.getGenre(),
+                p.getCover(),
+                p.getAudio(),
+                p.getUser().getUsername()
+        );
     }
 
-    public List<AudioPost> getAudioPostsByUser(Users user) {
-        return audioPostRepository.findByUser(user);
+    // ----------------------
+    // Helper methods
+    // ----------------------
+    private void validateFiles(MultipartFile cover, MultipartFile audio) {
+        if (cover.isEmpty() || audio.isEmpty()) {
+            throw new IllegalArgumentException("Files cannot be empty");
+        }
+
+        if (!Objects.requireNonNull(cover.getContentType()).startsWith("image/")) {
+            throw new IllegalArgumentException("Cover must be an image");
+        }
+
+        if (!Objects.requireNonNull(audio.getContentType()).startsWith("audio/")) {
+            throw new IllegalArgumentException("Audio must be an audio file");
+        }
+
+        // TODO: Optional: antivirus scan here
     }
 
+    private String saveFile(MultipartFile file, String dir) throws IOException {
+        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        File target = new File(dir + filename);
+        target.getParentFile().mkdirs();
+        file.transferTo(target);
+        return filename; // store relative path
+    }
 }

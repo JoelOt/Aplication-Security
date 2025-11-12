@@ -1,4 +1,4 @@
-package soundhub.model;
+package soundhub.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
