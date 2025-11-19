@@ -1,4 +1,4 @@
-package soundhub.service;
+package soundhub.services;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +11,7 @@ import java.util.Date;
 public class JwtService {
 
     private static final String SECRET_KEY = "your-256-bit-secret-your-256-bit-secret"; // 32+ chars
+
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 1 day
 
@@ -25,9 +26,7 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean isTokenValid(String token, String username) {

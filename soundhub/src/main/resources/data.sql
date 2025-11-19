@@ -69,24 +69,3 @@ SELECT (SELECT id FROM users WHERE username='twentyonepilots'),
   SELECT 1 FROM audio_post
   WHERE user_id=(SELECT id FROM users WHERE username='twentyonepilots') AND title='Car Radio'
 );
-
--- ===== DOWNLOAD_LOG (idempotent seed) =====
-INSERT INTO download_log (user_id, audio_post_id, downloaded_at)
-SELECT (SELECT id FROM users WHERE username='alice_user'),
-       (SELECT id FROM audio_post WHERE title='Yellow' AND user_id=(SELECT id FROM users WHERE username='coldplay')),
-       NOW() - INTERVAL 2 DAY
-WHERE NOT EXISTS (
-    SELECT 1 FROM download_log dl
-    WHERE dl.user_id=(SELECT id FROM users WHERE username='alice_user')
-  AND dl.audio_post_id=(SELECT id FROM audio_post WHERE title='Yellow' AND user_id=(SELECT id FROM users WHERE username='coldplay'))
-    );
-
-INSERT INTO download_log (user_id, audio_post_id, downloaded_at)
-SELECT (SELECT id FROM users WHERE username='bob_user'),
-       (SELECT id FROM audio_post WHERE title='Here Comes the Sun' AND user_id=(SELECT id FROM users WHERE username='beatles')),
-       NOW() - INTERVAL 1 DAY
-WHERE NOT EXISTS (
-    SELECT 1 FROM download_log dl
-    WHERE dl.user_id=(SELECT id FROM users WHERE username='bob_user')
-  AND dl.audio_post_id=(SELECT id FROM audio_post WHERE title='Here Comes the Sun' AND user_id=(SELECT id FROM users WHERE username='beatles'))
-    );

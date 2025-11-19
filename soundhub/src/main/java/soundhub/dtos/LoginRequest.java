@@ -1,4 +1,4 @@
-package soundhub.dto;
+package soundhub.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 

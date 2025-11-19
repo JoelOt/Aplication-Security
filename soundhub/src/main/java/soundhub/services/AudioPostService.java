@@ -1,14 +1,14 @@
-package soundhub.service;
+package soundhub.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import soundhub.dto.AudioPostRequest;
-import soundhub.dto.AudioPostResponse;
-import soundhub.entity.AudioPost;
-import soundhub.entity.Users;
-import soundhub.repository.AudioPostRepository;
-import soundhub.repository.UserRepository;
+import soundhub.dtos.AudioPostRequest;
+import soundhub.dtos.AudioPostResponse;
+import soundhub.entities.AudioPost;
+import soundhub.entities.Users;
+import soundhub.repositories.AudioPostRepository;
+import soundhub.repositories.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +41,8 @@ public class AudioPostService {
         post.setTitle(request.title());
         post.setDescription(request.description());
         post.setGenre(request.genre());
-        post.setCover(coverPath);
-        post.setAudio(audioPath);
+        post.setCover_path(coverPath);
+        post.setAudio_path(audioPath);
 
         AudioPost saved = audioPostRepository.save(post);
 
@@ -51,8 +51,8 @@ public class AudioPostService {
                 saved.getTitle(),
                 saved.getDescription(),
                 saved.getGenre(),
-                saved.getCover(),
-                saved.getAudio(),
+                saved.getCover_path(),
+                saved.getAudio_path(),
                 user.getUsername()
         );
     }
@@ -65,8 +65,8 @@ public class AudioPostService {
             throw new SecurityException("Cannot delete another user's post");
         }
 
-        new File(coverDir + post.getCover());
-        new File(audioDir + post.getAudio());
+        new File(coverDir + post.getCover_path());
+        new File(audioDir + post.getAudio_path());
 
         audioPostRepository.delete(post);
     }
@@ -78,8 +78,8 @@ public class AudioPostService {
                         p.getTitle(),
                         p.getDescription(),
                         p.getGenre(),
-                        p.getCover(),
-                        p.getAudio(),
+                        p.getCover_path(),
+                        p.getAudio_path(),
                         p.getUser().getUsername()
                 ))
                 .toList();
@@ -94,8 +94,8 @@ public class AudioPostService {
                 p.getTitle(),
                 p.getDescription(),
                 p.getGenre(),
-                p.getCover(),
-                p.getAudio(),
+                p.getCover_path(),
+                p.getAudio_path(),
                 p.getUser().getUsername()
         );
     }

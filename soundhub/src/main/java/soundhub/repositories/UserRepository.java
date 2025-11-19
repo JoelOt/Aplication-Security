@@ -1,8 +1,8 @@
-package soundhub.repository;
+package soundhub.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import soundhub.entity.Users;
+import soundhub.entities.Users;
 
 import java.util.Optional;
 

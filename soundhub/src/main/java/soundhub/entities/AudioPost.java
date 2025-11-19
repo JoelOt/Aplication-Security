@@ -1,9 +1,7 @@
-package soundhub.entity;
+package soundhub.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Data
@@ -25,10 +23,10 @@ public class AudioPost {
     private String genre;
 
     @Column(nullable = false, length = 255)
-    private String cover; // path relative to storage/covers
+    private String cover_path; // path relative to storage/covers
 
     @Column(nullable = false, length = 255)
-    private String audio; // path relative to storage/audio
+    private String audio_path; // path relative to storage/audio
 
     @Column(nullable = false, length = 200)
     private String title;
