@@ -37,10 +37,24 @@ services:
         condition: service_healthy
 
   frontend:
-    build: . 
+    build: ./frontend
     container_name: soundfake-frontend
     ports:
       - "4200:4200"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./soundhub
+    container_name: soundfake-backend
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/soundhub
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
     depends_on:
       db:
         condition: service_healthy
