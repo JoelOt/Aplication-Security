@@ -20,8 +20,8 @@
         flex-shrink: 0; // No se encoge
         
         .menu-icon {
-            width: 40px;
-            height: 40px;
+            width: 55px;
+            height: 55px;
             margin: auto 0 auto 10px;
         }
         
@@ -72,7 +72,6 @@
             
             }
         }
-
     }
     
     .profile-container{
@@ -87,9 +86,10 @@
             margin: auto 0 auto 10px;
 
             .username-text {
+                font-weight: 600;
                 color: #bebebe;
                 font-size: 16px;
-                white-space: nowrap; // Evita que el texto se parta
+                white-space: nowrap; 
             }
         }
 
@@ -114,6 +114,19 @@
                 background-color: #8a8a8a;
             }
         }
+    }   
+}
+
+.signup-btn {
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: #0056b3;
     }
-    
 }
