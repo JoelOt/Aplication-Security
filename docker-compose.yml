@@ -36,5 +36,14 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build: . 
+    container_name: soundfake-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db_data:
