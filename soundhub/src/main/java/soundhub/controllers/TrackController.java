@@ -1,0 +1,77 @@
+package soundhub.controllers;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import soundhub.entities.AudioPost;
+import soundhub.repositories.AudioPostRepository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequiredArgsConstructor
+public class TrackController {
+
+    private final AudioPostRepository audioPostRepository;
+
+    @GetMapping("/tracks/recommended")
+    public ResponseEntity<List<Map<String, Object>>> getRecommendedTracks() {
+        List<AudioPost> posts = audioPostRepository.findAll();
+
+        String baseUrl = "http://localhost:8082";
+
+        // Map to frontend expected format
+        List<Map<String, Object>> result = posts.stream().map(post -> {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", post.getId());
+            map.put("title", post.getTitle());
+            map.put("artist", post.getUser().getUsername());
+            map.put("coverImage", baseUrl + "/content/" + post.getCover_path());
+            map.put("audioUrl", baseUrl + "/content/" + post.getAudio_path());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/track/current")
+    public ResponseEntity<Map<String, Object>> getCurrentTrack() {
+        String baseUrl = "http://localhost:8082";
+
+        // For demo purposes, return the first track or a dummy one
+        return audioPostRepository.findAll().stream().findFirst()
+                .map(post -> {
+                    Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("trackName", post.getTitle());
+                    map.put("artistName", post.getUser().getUsername());
+                    map.put("trackImage", baseUrl + "/content/" + post.getCover_path());
+                    map.put("audioUrl", baseUrl + "/content/" + post.getAudio_path());
+                    map.put("duration", 0);
+                    return ResponseEntity.ok(map);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/tracks/search")
+    public ResponseEntity<List<Map<String, Object>>> searchTracks(
+            @org.springframework.web.bind.annotation.RequestParam String query) {
+        List<AudioPost> posts = audioPostRepository.findByTitleContainingIgnoreCase(query);
+
+        String baseUrl = "http://localhost:8082";
+
+        List<Map<String, Object>> result = posts.stream().map(post -> {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", post.getId());
+            map.put("title", post.getTitle());
+            map.put("artist", post.getUser().getUsername());
+            map.put("coverImage", baseUrl + "/content/" + post.getCover_path());
+            map.put("audioUrl", baseUrl + "/content/" + post.getAudio_path());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+}

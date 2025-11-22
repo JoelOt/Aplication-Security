@@ -22,8 +22,17 @@ public class AudioPostService {
     private final AudioPostRepository audioPostRepository;
     private final UserRepository userRepository;
 
-    private final String audioDir = "soundhub/storage/audio/";
-    private final String coverDir = "soundhub/storage/covers/";
+    @org.springframework.beans.factory.annotation.Value("${storage.base-dir}")
+    private String baseDir;
+
+    private String audioDir;
+    private String coverDir;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        this.audioDir = baseDir + "/audio/";
+        this.coverDir = baseDir + "/covers/";
+    }
 
     public AudioPostResponse uploadAudioPost(int userId, AudioPostRequest request) throws IOException {
         Users user = userRepository.findById(userId)
@@ -53,8 +62,7 @@ public class AudioPostService {
                 saved.getGenre(),
                 saved.getCover_path(),
                 saved.getAudio_path(),
-                user.getUsername()
-        );
+                user.getUsername());
     }
 
     public void deleteAudioPost(int userId, Long postId) {
@@ -80,8 +88,7 @@ public class AudioPostService {
                         p.getGenre(),
                         p.getCover_path(),
                         p.getAudio_path(),
-                        p.getUser().getUsername()
-                ))
+                        p.getUser().getUsername()))
                 .toList();
     }
 
@@ -96,8 +103,7 @@ public class AudioPostService {
                 p.getGenre(),
                 p.getCover_path(),
                 p.getAudio_path(),
-                p.getUser().getUsername()
-        );
+                p.getUser().getUsername());
     }
 
     // ----------------------

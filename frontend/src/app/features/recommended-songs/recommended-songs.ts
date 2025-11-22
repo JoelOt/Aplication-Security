@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ApiService } from '../../core/api.service';
 
 interface Song {
   id: number;
   title: string;
   artist: string;
   coverImage: string;
+  audioUrl?: string;
 }
 
 @Component({
@@ -14,134 +16,37 @@ interface Song {
   templateUrl: './recommended-songs.html',
   styleUrl: './recommended-songs.scss',
 })
-export class RecommendedSongs {
-  recommendedSongs: Song[] = [
-    {
-      id: 1,
-      title: 'Song Name 1',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 2,
-      title: 'Song Name 2',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 3,
-      title: 'Song Name 3',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 4,
-      title: 'Song Name 4',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 5,
-      title: 'Song Name 5',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 6,
-      title: 'Song Name 6',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 7,
-      title: 'Song Name 7',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
-    },
+export class RecommendedSongs implements OnInit {
+  recommendedSongs: Song[] = [];
 
-    {
-      id: 8,
-      title: 'Song Name 8',
-      artist: 'Artist Name',
-      coverImage: '/song-cover.jpg'
+  constructor(
+    private api: ApiService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      // Suscribirse a los resultados de búsqueda
+      this.api.searchResults$.subscribe(results => {
+        if (results.length > 0) {
+          this.recommendedSongs = results;
+        } else {
+          // Si no hay búsqueda, cargar recomendados
+          this.loadRecommendedSongs();
+        }
+      });
     }
-  ];
+  }
+
+  loadRecommendedSongs() {
+    this.api.get<Song[]>('tracks/recommended')
+      .subscribe({
+        next: (songs) => {
+          this.recommendedSongs = songs;
+        },
+        error: (err) => {
+          console.error('Error al cargar canciones recomendadas', err);
+        }
+      });
+  }
 }

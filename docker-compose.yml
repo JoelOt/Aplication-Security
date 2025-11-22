@@ -3,9 +3,7 @@ services:
     image: mysql:8.0
     container_name: soundhub-db
     command: >
-      --default-authentication-plugin=mysql_native_password
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_0900_ai_ci
+      --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: soundhub
@@ -17,7 +15,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,10 +38,9 @@ services:
     build: ./frontend
     container_name: soundfake-frontend
     ports:
-      - "4200:4200"
+      - "4200:80"
     depends_on:
-      db:
-        condition: service_healthy
+      - backend
 
   backend:
     build:
@@ -55,9 +52,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/soundhub
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+      STORAGE_BASE_DIR: /app/storage
+    volumes:
+      - ./soundhub/storage:/app/storage
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   db_data:
+  soundhub_storage:

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ApiService } from '../../core/api.service'; // Importa tu servicio central
 
 @Component({
   selector: 'media-player',
@@ -7,6 +8,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
   templateUrl: './media-player.html',
   styleUrl: './media-player.scss',
 })
+
 export class MediaPlayer implements OnInit, OnDestroy {
   trackImage = '/assets/album-placeholder.png';
   trackName = 'Song Title';
@@ -18,31 +20,41 @@ export class MediaPlayer implements OnInit, OnDestroy {
   isPlaying = false;
 
   private audio: HTMLAudioElement | null = null;
-  private progressInterval: any;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private api: ApiService // inyecta el servicio
+  ) {}
 
   ngOnInit() {
     // Solo ejecutar en el navegador
     if (isPlatformBrowser(this.platformId)) {
-      // Crear elemento de audio
-      this.audio = new Audio();
-      this.audio.src = '/assets/your-song.mp3'; // Cambia por tu canción
-      this.audio.volume = this.volume / 100;
+      // Pedimos la info de la canción al backend
+      this.api.get<{ trackName: string; artistName: string; trackImage: string; audioUrl: string; duration: number }>('track/current')
+        .subscribe(track => {
+          this.trackName = track.trackName;
+          this.artistName = track.artistName;
+          this.trackImage = track.trackImage;
 
-      // Eventos del audio
-      this.audio.addEventListener('loadedmetadata', () => {
-        this.totalTime = this.formatTime(this.audio!.duration);
-      });
+          // Crear elemento de audio
+          this.audio = new Audio(track.audioUrl);
+          this.audio.volume = this.volume / 100;
 
-      this.audio.addEventListener('timeupdate', () => {
-        this.updateProgress();
-      });
+          // Si el backend no devuelve duración exacta, usar evento loadedmetadata
+          if (track.duration) {
+            this.totalTime = this.formatTime(track.duration);
+          } else {
+            this.audio.addEventListener('loadedmetadata', () => {
+              this.totalTime = this.formatTime(this.audio!.duration);
+            });
+          }
 
-      this.audio.addEventListener('ended', () => {
-        this.isPlaying = false;
-        this.progress = 0;
-      });
+          this.audio.addEventListener('timeupdate', () => this.updateProgress());
+          this.audio.addEventListener('ended', () => {
+            this.isPlaying = false;
+            this.progress = 0;
+          });
+        });
     }
   }
 
@@ -51,12 +63,8 @@ export class MediaPlayer implements OnInit, OnDestroy {
       this.audio.pause();
       this.audio = null;
     }
-    if (this.progressInterval) {
-      clearInterval(this.progressInterval);
-    }
   }
 
-  // Control de volumen
   setVolume(event: MouseEvent) {
     const volumeBar = event.currentTarget as HTMLElement;
     const rect = volumeBar.getBoundingClientRect();
@@ -69,21 +77,19 @@ export class MediaPlayer implements OnInit, OnDestroy {
     }
   }
 
-  // Control de progreso
   seekTrack(event: MouseEvent) {
+    if (!this.audio) return;
+
     const progressBar = event.currentTarget as HTMLElement;
     const rect = progressBar.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const width = rect.width;
     const percentage = (x / width) * 100;
-    
-    if (this.audio) {
-      this.audio.currentTime = (percentage / 100) * this.audio.duration;
-      this.progress = percentage;
-    }
+
+    this.audio.currentTime = (percentage / 100) * this.audio.duration;
+    this.progress = percentage;
   }
 
-  // Reproducir/pausar
   togglePlay() {
     if (!this.audio) return;
 
@@ -95,26 +101,21 @@ export class MediaPlayer implements OnInit, OnDestroy {
     this.isPlaying = !this.isPlaying;
   }
 
-  // Siguiente/anterior
   skipNext() {
-    // Implementa lógica de playlist
     console.log('Next track');
   }
 
   skipPrevious() {
-    // Implementa lógica de playlist
     console.log('Previous track');
   }
 
-  // Actualizar progreso
   private updateProgress() {
     if (!this.audio) return;
-    
+
     this.currentTime = this.formatTime(this.audio.currentTime);
     this.progress = (this.audio.currentTime / this.audio.duration) * 100;
   }
 
-  // Formatear tiempo
   private formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);

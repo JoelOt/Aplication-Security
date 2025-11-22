@@ -2,14 +2,15 @@
     <div class="menu-container">
         <img src="/logo.png" alt="Menu Icon" class="menu-icon" />
         <div class="name-container">
-            <span class="menu-text">FakeCloud</span> 
+            <span class="menu-text">FakeCloud</span>
         </div>
     </div>
 
     <div class="searchbar-container">
 
         <div class="searchbar">
-            <input class="searchbar-input" type="text" placeholder="Search..." [(ngModel)]="searchQuery" />
+            <input class="searchbar-input" type="text" placeholder="Search..." [(ngModel)]="searchQuery"
+                (input)="onSearch()" />
         </div>
     </div>
 

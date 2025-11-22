@@ -13,4 +13,6 @@ public interface AudioPostRepository extends JpaRepository<AudioPost, Long> {
     List<AudioPost> findByUserId(int userId);
 
     Optional<AudioPost> findByUserIdAndTitle(int userId, String title);
+
+    List<AudioPost> findByTitleContainingIgnoreCase(String title);
 }
