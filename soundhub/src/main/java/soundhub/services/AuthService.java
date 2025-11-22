@@ -16,6 +16,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public UserResponse register(RegisterRequest request) {
 
@@ -35,7 +36,7 @@ public class AuthService {
         user.setEmail(request.email());
         user.setDni(request.dni());
         user.setAge(request.age());
-        user.setPassword(request.password());
+        user.setPassword(passwordEncoder.encode(request.password())); // Hash password with BCrypt
         user.setRole(Role.REGULAR);
 
         Users saved = userRepository.save(user);
@@ -48,26 +49,19 @@ public class AuthService {
                 saved.getEmail(),
                 saved.getDni(),
                 saved.getAge(),
-                saved.getRole().name()
-        );
+                saved.getRole().name());
     }
 
     public LoginResponse login(LoginRequest request) {
         try {
             authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
-            );
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         } catch (Exception ex) {
             throw new IllegalArgumentException("Invalid username or password");
         }
 
         Users user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        // Compare password hashes
-        if (!user.getPassword().equals(request.password())) {
-            throw new IllegalArgumentException("Incorrect password");
-        }
 
         String token = jwtService.generateToken(user.getUsername());
         return new LoginResponse(token);
@@ -78,10 +72,10 @@ public class AuthService {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (!user.getPassword().equals(request.oldPassword()))
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword()))
             throw new IllegalArgumentException("Old password is incorrect");
 
-        user.setPassword(request.newPassword());
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
     }
 
@@ -98,7 +92,6 @@ public class AuthService {
                 user.getEmail(),
                 user.getDni(),
                 user.getAge(),
-                user.getRole().name()
-        );
+                user.getRole().name());
     }
 }

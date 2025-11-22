@@ -1,0 +1,91 @@
+.profile-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #e0e0e0;
+}
+
+.profile-card {
+    background-color: #282828;
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+
+    .avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        background-color: #404040;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+
+        .material-symbols-outlined {
+            font-size: 40px;
+            color: #a0a0a0;
+        }
+    }
+
+    h2 {
+        margin: 0 0 10px 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .role-badge {
+        background-color: #007bff;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+
+        &.artist {
+            background-color: #9c27b0; // Purple for artists
+        }
+    }
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #404040;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+
+        .value {
+            color: #ffffff;
+            font-weight: 500;
+        }
+    }
+}
+
+.loading-state {
+    text-align: center;
+    color: #a0a0a0;
+    padding: 20px;
+}

@@ -1,11 +1,15 @@
 package soundhub.controllers;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import soundhub.dtos.*;
 import soundhub.services.AuthService;
+
+import soundhub.entities.Users;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,22 +21,20 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            return ResponseEntity.ok(authService.register(request));
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body(new ErrorResponse("Unexpected error"));
+            UserResponse response = authService.register(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            return ResponseEntity.ok(authService.login(request));
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(401).body(new ErrorResponse(ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body(new ErrorResponse("Unexpected error"));
+            LoginResponse response = authService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body(new ErrorResponse(e.getMessage()));
         }
     }
 
@@ -59,5 +61,12 @@ public class AuthController {
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().body(new ErrorResponse("Unexpected error"));
         }
+    }
+
+    // Simple DTO for error messages
+    @Data
+    @AllArgsConstructor
+    static class ErrorResponse {
+        private String message;
     }
 }

@@ -45,4 +45,41 @@ export class ApiService {
   setCurrentTrack(track: any) {
     this.currentTrackSubject.next(track);
   }
+
+  // Authentication methods
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  login(username: string, password: string): Observable<{ token: string }> {
+    return this.post<{ token: string }>('auth/login', { username, password });
+  }
+
+  register(userData: any): Observable<any> {
+    return this.post('auth/register', userData);
+  }
+
+  logout() {
+    localStorage.removeItem('jwt_token');
+    this.currentUserSubject.next(null);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('jwt_token');
+  }
+
+  setToken(token: string) {
+    localStorage.setItem('jwt_token', token);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  getCurrentUser(): Observable<any> {
+    return this.get('auth/me');
+  }
+
+  setCurrentUser(user: any) {
+    this.currentUserSubject.next(user);
+  }
 }

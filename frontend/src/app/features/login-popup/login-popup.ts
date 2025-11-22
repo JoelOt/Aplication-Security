@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../core/api.service';
 
 @Component({
   selector: 'login-popup',
@@ -11,10 +12,17 @@ import { CommonModule } from '@angular/common';
 export class LoginPopup {
   @Output() closePopup = new EventEmitter<void>();
   @Input() isLoginMode: boolean = true;
+  @Input() forced: boolean = false;
 
   public loginForm: FormGroup;
+  public errorMessage: string = '';
+  public successMessage: string = '';
+  public isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private api: ApiService
+  ) {
     this.loginForm = this.fb.group({
       username_email: ['', [Validators.required]],
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -29,18 +37,99 @@ export class LoginPopup {
 
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      console.log('Form data:', this.loginForm.value);
-      // Aquí envías los datos al backend
-      this.closePopup.emit();
+    // In login mode we only need username/email and password, so skip full form validation
+    if (this.isLoginMode) {
+      // Ensure required login fields are present
+      const username = this.loginForm.get('username_email')?.value?.trim();
+      const password = this.loginForm.get('password')?.value;
+      if (!username || !password) {
+        this.errorMessage = 'Username/email and password are required';
+        this.loginForm.markAllAsTouched();
+        return;
+      }
     } else {
-      console.log('Form inválido');
-      this.loginForm.markAllAsTouched();
+      // Registration mode: validate the whole form
+      if (!this.loginForm.valid) {
+        this.loginForm.markAllAsTouched();
+        return;
+      }
     }
+
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.isLoginMode) {
+      // Login
+      const username = this.loginForm.get('username_email')?.value;
+      const password = this.loginForm.get('password')?.value;
+
+      this.api.login(username, password).subscribe({
+        next: (response) => {
+          this.api.setToken(response.token);
+          this.api.getCurrentUser().subscribe({
+            next: (user) => {
+              this.api.setCurrentUser(user);
+              this.isLoading = false;
+              this.closePopup.emit();
+            },
+            error: (err) => {
+              console.error('Error fetching user:', err);
+              this.isLoading = false;
+              this.closePopup.emit(); // Close anyway, token is valid
+            }
+          });
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || 'Invalid username or password';
+        }
+      });
+    } else {
+      // Register
+      const userData = {
+        name: this.loginForm.get('username')?.value, // Using username as name for now
+        surname: 'User', // Default surname
+        username: this.loginForm.get('username')?.value,
+        email: this.loginForm.get('email')?.value,
+        dni: this.loginForm.get('id')?.value,
+        age: this.calculateAge(this.loginForm.get('dob')?.value),
+        password: this.loginForm.get('password')?.value,
+        role: this.loginForm.get('role')?.value.toUpperCase()
+      };
+
+      this.api.register(userData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          // Auto-login after registration
+          this.isLoginMode = true;
+          this.successMessage = 'Registration successful! Please login.';
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || 'Registration failed';
+        }
+      });
+    }
+  }
+
+  calculateAge(dob: string): number {
+    const [day, month, year] = dob.split('/').map(Number);
+    const birthDate = new Date(year, month - 1, day);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
   }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
   onClose() {

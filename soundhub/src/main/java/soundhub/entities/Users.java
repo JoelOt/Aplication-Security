@@ -29,8 +29,9 @@ public class Users {
     @NotBlank
     private String username;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(nullable = false, unique = true, length = 128)
     @NotBlank
+    @Convert(converter = soundhub.utils.EncryptorConverter.class)
     private String dni;
 
     @Column(nullable = false)
@@ -38,7 +39,8 @@ public class Users {
     @Max(120)
     private Integer age;
 
-    @Column(nullable = false, length = 64, unique = true)
+    @Column(nullable = false, length = 256, unique = true)
+    @Convert(converter = soundhub.utils.EncryptorConverter.class)
     private String email;
 
     @Column(nullable = false, length = 256)

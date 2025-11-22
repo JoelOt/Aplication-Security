@@ -1,31 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/api.service';
 import { LoginPopup } from '../login-popup/login-popup';
-
-
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'header',
-  imports: [CommonModule, FormsModule, LoginPopup],
+  standalone: true,
+  imports: [CommonModule, FormsModule, LoginPopup, RouterModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
-export class Header {
+export class Header implements OnInit {
 
   public searchQuery: string = '';
   public showLoginPopup: boolean = false;
   public isLoginMode: boolean = true;
+  public isLoggedIn: boolean = false;
+  public currentUser: any = null;
+
+  constructor(private api: ApiService) { }
 
   ngOnInit() {
     console.log('Header initialized');
-    //TODO!
-    // ara shauria de fer una variable de si esta la session iniciada, en cas que si
-    // mostras el nom dusuario, si no el login/signup, si el usuario es author,
-    //shauria de mostrar un boto flotant a la part inferior dreta per pujar noves cansons
-    //fer el dialeg de noves cansons, on ha dhaver un file uploader per la portada i un per la canso,
-    // i un input per el titol i una textarea per la descripcio i genere
+
+    // Check initial login state
+    this.isLoggedIn = this.api.isLoggedIn();
+    if (this.isLoggedIn) {
+      this.api.getCurrentUser().subscribe({
+        next: (user) => {
+          this.api.setCurrentUser(user);
+        },
+        error: () => {
+          this.logout();
+        }
+      });
+    }
+
+    // Subscribe to user changes
+    this.api.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isLoggedIn = !!user;
+    });
   }
 
   doLogin() {
@@ -40,11 +57,15 @@ export class Header {
     this.showLoginPopup = true;
   }
 
+  logout() {
+    this.api.logout();
+    this.isLoggedIn = false;
+    this.currentUser = null;
+  }
+
   closeLoginPopup() {
     this.showLoginPopup = false;
   }
-
-  constructor(private api: ApiService) { }
 
   onSearch() {
     this.api.searchTracks(this.searchQuery);

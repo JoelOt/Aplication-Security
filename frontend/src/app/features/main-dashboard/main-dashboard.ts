@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { Header } from '../header/header';
 import { MediaPlayer } from '../media-player/media-player';
-import { RecommendedSongs } from '../recommended-songs/recommended-songs';
 
 @Component({
   selector: 'main-dashboard',
-  imports: [Header, MediaPlayer, RecommendedSongs],
+  standalone: true,
+  imports: [Header, MediaPlayer, RouterModule],
   templateUrl: './main-dashboard.html',
   styleUrl: './main-dashboard.scss',
 })

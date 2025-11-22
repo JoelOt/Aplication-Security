@@ -3,10 +3,16 @@
     <span class="title-text">
       {{ isLoginMode ? 'Login to FakeCloud' : 'Create account' }}
     </span>
-    <div class="close-dialog" role="button" aria-label="Close dialog" (click)="onClose()">
+    <div class="close-dialog" role="button" aria-label="Close dialog" (click)="onClose()" *ngIf="!forced">
       <span class="material-symbols-outlined">close</span>
     </div>
   </div>
+
+  <!-- Error Message -->
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="success-banner">{{ successMessage }}</div>
 
   <div class="form-container" style="overflow-y: hidden;">
     <form id="loginForm" [formGroup]="loginForm" class="form-holder" (ngSubmit)="onSubmit()">
@@ -99,20 +105,20 @@
               select a role</span></div>
         </div>
       </div>
+      <!-- Submit Button inside form -->
+      <div class="buttons-container">
+        <div class="login-register-holder">
+          <button class="submit-btn" type="submit">
+            {{ isLoginMode ? 'Login' : 'Register' }}
+          </button>
+        </div>
+        <div class="switch-recover">
+          <span class="switch-mode-text" (click)="onSwitchMode()">{{ isLoginMode ? 'Create new account' : 'Already have
+            an
+            account? Login' }}</span>
+          <span class="recover-password-text" *ngIf="isLoginMode" (click)="onRecoverPassword()">Forgot Password?</span>
+        </div>
+      </div>
     </form>
-  </div>
-
-  <div class="buttons-container">
-    <div class="login-register-holder">
-      <!-- usar atributo estático form="loginForm" sin interpolación -->
-      <button class="submit-btn" type="submit" form="loginForm">
-        {{ isLoginMode ? 'Login' : 'Register' }}
-      </button>
-    </div>
-    <div class="switch-recover">
-      <span class="switch-mode-text" (click)="onSwitchMode()">{{ isLoginMode ? 'Create new account' : 'Already have an
-        account? Login' }}</span>
-      <span class="recover-password-text" *ngIf="isLoginMode" (click)="onRecoverPassword()">Forgot Password?</span>
-    </div>
   </div>
 </div>
