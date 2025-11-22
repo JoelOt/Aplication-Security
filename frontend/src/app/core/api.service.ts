@@ -9,6 +9,10 @@ export class ApiService {
   private searchResultsSubject = new BehaviorSubject<any[]>([]);
   public searchResults$ = this.searchResultsSubject.asObservable();
 
+  // Subject to manage the currently playing track
+  private currentTrackSubject = new BehaviorSubject<any>(null);
+  public currentTrack$ = this.currentTrackSubject.asObservable();
+
   constructor(private http: HttpClient) { }
 
   get<T>(endpoint: string, options: any = {}): Observable<T> {
@@ -36,5 +40,9 @@ export class ApiService {
 
   delete<T>(endpoint: string, options: any = {}): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`, options) as Observable<T>;
+  }
+
+  setCurrentTrack(track: any) {
+    this.currentTrackSubject.next(track);
   }
 }

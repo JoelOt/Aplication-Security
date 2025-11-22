@@ -16,11 +16,25 @@
 
     <div class="profile-container">
         <div class="username-container">
-            <span class="username-text"> Login/Sign up</span>
+            <span class="username-text" (click)="doLogin()"> Login</span>
         </div>
+        <div class="username-container">
+            <div class="signup-holder">
+                <div class="signup-btn">
+                    <span class="username-text" (click)="doRegister()"> Sign up</span>
+                </div>
+            </div>
+        </div>
+
         <div class="profile-icon">
-            <img src="/user.png" alt="Profile Icon" class="profile-image" />
+            <img src="/user.png" alt="Profile Icon" class="profile-image" (click)="doLogin()" />
         </div>
     </div>
+</div>
 
+<!-- Login Popup Overlay -->
+<div class="popup-overlay" *ngIf="showLoginPopup" (click)="closeLoginPopup()">
+    <div class="popup-content" (click)="$event.stopPropagation()">
+        <login-popup [isLoginMode]="isLoginMode" (closePopup)="closeLoginPopup()"></login-popup>
+    </div>
 </div>

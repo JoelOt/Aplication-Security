@@ -1,0 +1,118 @@
+<div class="dialog-container" [ngClass]="{ 'signup-mode': !isLoginMode, 'login-mode': isLoginMode }">
+  <div class="login-title">
+    <span class="title-text">
+      {{ isLoginMode ? 'Login to FakeCloud' : 'Create account' }}
+    </span>
+    <div class="close-dialog" role="button" aria-label="Close dialog" (click)="onClose()">
+      <span class="material-symbols-outlined">close</span>
+    </div>
+  </div>
+
+  <div class="form-container" style="overflow-y: hidden;">
+    <form id="loginForm" [formGroup]="loginForm" class="form-holder" (ngSubmit)="onSubmit()">
+      <!-- LOGIN PANEL -->
+      <div class="panel login-panel" *ngIf="isLoginMode">
+        <div class="form-group">
+          <label class="form-text" for="username_email">Username / Email</label>
+          <input id="username_email" class="input-thing" type="text" formControlName="username_email"
+            placeholder="Enter your username or email"
+            [class.error]="username_email?.invalid && username_email?.touched" />
+          <div class="error-row"><span class="error-message"
+              [class.visible]="username_email?.invalid && username_email?.touched">Username or email is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-text" for="password">Password</label>
+          <input id="password" class="input-thing" type="password" formControlName="password"
+            placeholder="Enter your password" [class.error]="password?.invalid && password?.touched" />
+          <div class="error-row"><span class="error-message"
+              [class.visible]="password?.invalid && password?.touched">Password is required</span></div>
+        </div>
+      </div>
+
+      <!-- SIGNUP PANEL (más alto, con campos extra) -->
+      <div class="panel signup-panel" *ngIf="!isLoginMode">
+        <div class="form-group">
+          <label class="form-text" for="username">Username</label>
+          <input id="username" class="input-thing" type="text" formControlName="username"
+            placeholder="Choose a username" [class.error]="username?.invalid && username?.touched" />
+          <div class="error-row"><span class="error-message"
+              [class.visible]="username?.invalid && username?.touched">Username is required</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-text" for="id">ID</label>
+          <input id="id" class="input-thing" type="text" formControlName="id" placeholder="Enter your ID"
+            [class.error]="id?.invalid && id?.touched" />
+          <div class="error-row"><span class="error-message" [class.visible]="id?.invalid && id?.touched">ID is
+              required</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-text" for="dob">Date of Birth</label>
+          <input id="dateofbirth" class="input-thing" type="text" formControlName="dob" placeholder="DD/MM/YYYY"
+            maxlength="10" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}"
+            [class.error]="dob?.invalid && dob?.touched" />
+          <div class="error-row"><span class="error-message" [class.visible]="dob?.invalid && dob?.touched">Use format
+              DD/MM/YYYY</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-text" for="email">Email</label>
+          <input id="email" class="input-thing" type="email" formControlName="email" placeholder="Enter your email"
+            [class.error]="email?.invalid && email?.touched" />
+          <div class="error-row"><span class="error-message" [class.visible]="email?.invalid && email?.touched">Valid
+              email required</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-text" for="password">Password</label>
+          <input id="password_signup" class="input-thing" type="password" formControlName="password"
+            placeholder="Create a password" [class.error]="password?.invalid && password?.touched" />
+          <div class="error-row"><span class="error-message"
+              [class.visible]="password?.invalid && password?.touched">Password is required</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-text" for="confirmPassword">Confirm Password</label>
+          <input id="confirmPassword" class="input-thing" type="password" formControlName="confirmPassword"
+            placeholder="Confirm your password" [class.error]="confirmPassword?.invalid && confirmPassword?.touched" />
+          <div class="error-row"><span class="error-message"
+              [class.visible]="confirmPassword?.invalid && confirmPassword?.touched">Passwords doesn't match</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-text" for="role">I am a</label>
+          <div class="role-toggle" style="margin-top: 10px;">
+            <label class="role-option">
+              <input type="radio" formControlName="role" value="artist" />
+              <span>Artist</span>
+            </label>
+            <label class="role-option">
+              <input type="radio" formControlName="role" value="listener" />
+              <span>Listener</span>
+            </label>
+          </div>
+          <div class="error-row"><span class="error-message" [class.visible]="role?.invalid && role?.touched">Please
+              select a role</span></div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="buttons-container">
+    <div class="login-register-holder">
+      <!-- usar atributo estático form="loginForm" sin interpolación -->
+      <button class="submit-btn" type="submit" form="loginForm">
+        {{ isLoginMode ? 'Login' : 'Register' }}
+      </button>
+    </div>
+    <div class="switch-recover">
+      <span class="switch-mode-text" (click)="onSwitchMode()">{{ isLoginMode ? 'Create new account' : 'Already have an
+        account? Login' }}</span>
+      <span class="recover-password-text" *ngIf="isLoginMode" (click)="onRecoverPassword()">Forgot Password?</span>
+    </div>
+  </div>
+</div>

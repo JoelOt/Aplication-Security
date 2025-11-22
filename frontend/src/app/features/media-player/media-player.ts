@@ -24,38 +24,60 @@ export class MediaPlayer implements OnInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private api: ApiService // inyecta el servicio
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Solo ejecutar en el navegador
     if (isPlatformBrowser(this.platformId)) {
-      // Pedimos la info de la canción al backend
-      this.api.get<{ trackName: string; artistName: string; trackImage: string; audioUrl: string; duration: number }>('track/current')
-        .subscribe(track => {
-          this.trackName = track.trackName;
-          this.artistName = track.artistName;
-          this.trackImage = track.trackImage;
-
-          // Crear elemento de audio
-          this.audio = new Audio(track.audioUrl);
-          this.audio.volume = this.volume / 100;
-
-          // Si el backend no devuelve duración exacta, usar evento loadedmetadata
-          if (track.duration) {
-            this.totalTime = this.formatTime(track.duration);
-          } else {
-            this.audio.addEventListener('loadedmetadata', () => {
-              this.totalTime = this.formatTime(this.audio!.duration);
+      // Listen for track changes from the shared service
+      this.api.currentTrack$.subscribe(track => {
+        if (track) {
+          this.loadTrack(track);
+        } else {
+          // If no track is set, load the default current track
+          this.api.get<{ trackName: string; artistName: string; trackImage: string; audioUrl: string; duration: number }>('track/current')
+            .subscribe(defaultTrack => {
+              this.loadTrack(defaultTrack);
             });
-          }
-
-          this.audio.addEventListener('timeupdate', () => this.updateProgress());
-          this.audio.addEventListener('ended', () => {
-            this.isPlaying = false;
-            this.progress = 0;
-          });
-        });
+        }
+      });
     }
+  }
+
+  private loadTrack(track: { trackName: string; artistName: string; trackImage: string; audioUrl: string; duration?: number }) {
+    this.trackName = track.trackName;
+    this.artistName = track.artistName;
+    this.trackImage = track.trackImage;
+
+    // Clean up previous audio if exists
+    if (this.audio) {
+      this.audio.pause();
+      this.audio = null;
+    }
+
+    // Create new audio element
+    this.audio = new Audio(track.audioUrl);
+    this.audio.volume = this.volume / 100;
+
+    // Handle duration
+    if (track.duration) {
+      this.totalTime = this.formatTime(track.duration);
+    } else {
+      this.audio.addEventListener('loadedmetadata', () => {
+        this.totalTime = this.formatTime(this.audio!.duration);
+      });
+    }
+
+    // Add event listeners
+    this.audio.addEventListener('timeupdate', () => this.updateProgress());
+    this.audio.addEventListener('ended', () => {
+      this.isPlaying = false;
+      this.progress = 0;
+    });
+
+    // Auto-play the new track
+    this.audio.play();
+    this.isPlaying = true;
   }
 
   ngOnDestroy() {
@@ -71,7 +93,7 @@ export class MediaPlayer implements OnInit, OnDestroy {
     const x = event.clientX - rect.left;
     const width = rect.width;
     this.volume = Math.round((x / width) * 100);
-    
+
     if (this.audio) {
       this.audio.volume = this.volume / 100;
     }

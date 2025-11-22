@@ -11,24 +11,24 @@
     height: 100%;
     display: flex;
     background: #2b2b2b;
-    
-    .menu-container{
+
+    .menu-container {
         min-width: 200px; // Tamaño fijo mínimo
         width: auto; // Se ajusta al contenido
         height: 100%;
         display: flex;
         flex-shrink: 0; // No se encoge
-        
+
         .menu-icon {
-            width: 40px;
-            height: 40px;
+            width: 55px;
+            height: 55px;
             margin: auto 0 auto 10px;
         }
-        
+
         .name-container {
             display: flex;
             align-items: center;
-            margin-left: 10px;    
+            margin-left: 10px;
         }
 
         .menu-text {
@@ -38,8 +38,8 @@
             white-space: nowrap; // Evita que el texto se parta
         }
     }
-    
-    .searchbar-container{
+
+    .searchbar-container {
         flex: 1; // Ocupa todo el espacio disponible
         min-width: 200px; // Ancho mínimo para que sea usable
         height: 100%;
@@ -60,22 +60,22 @@
                 font-size: 16px;
                 background-color: #707070;
 
-                 &:focus {
+                &:focus {
                     outline: none;
-                    border: none; 
+                    border: none;
                 }
 
                 &::placeholder {
                     color: #000000;
                     opacity: 1;
                 }
-            
+
             }
         }
 
     }
-    
-    .profile-container{
+
+    .profile-container {
         width: 210px;
         height: 100%;
         display: flex;
@@ -87,6 +87,7 @@
             margin: auto 0 auto 10px;
 
             .username-text {
+                font-weight: 600;
                 color: #bebebe;
                 font-size: 16px;
                 white-space: nowrap; // Evita que el texto se parta
@@ -115,5 +116,51 @@
             }
         }
     }
-    
+}
+
+.signup-btn {
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: #0056b3;
+    }
+
+}
+
+/* Login Popup Overlay Styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.popup-content {
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

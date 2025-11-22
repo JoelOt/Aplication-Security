@@ -49,4 +49,14 @@ export class RecommendedSongs implements OnInit {
         }
       });
   }
+
+  playSong(song: Song) {
+    // Set the current track in the shared service
+    this.api.setCurrentTrack({
+      trackName: song.title,
+      artistName: song.artist,
+      trackImage: song.coverImage,
+      audioUrl: song.audioUrl || `http://localhost:8082/tracks/${song.id}/audio`
+    });
+  }
 }

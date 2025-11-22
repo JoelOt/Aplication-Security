@@ -2,7 +2,7 @@
   <h2 class="section-title">Recommended for you</h2>
   
   <div class="songs-grid">
-    <div class="song-card" *ngFor="let song of recommendedSongs">
+    <div class="song-card" *ngFor="let song of recommendedSongs" (click)="playSong(song)">
       <div class="song-image-container">
         <img [src]="song.coverImage" [alt]="song.title" class="song-image" />
         <div class="play-button-overlay">
