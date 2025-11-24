@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import soundhub.dtos.AudioPostRequest;
-import soundhub.dtos.AudioPostResponse;
-import soundhub.dtos.ErrorResponse;
-import soundhub.entities.Users;
+import soundhub.dto.AudioPostRequest;
+import soundhub.dto.AudioPostResponse;
+import soundhub.dto.ErrorResponse;
+import soundhub.entities.User;
 import soundhub.repositories.UserRepository;
 import soundhub.services.AudioPostService;
 
@@ -25,7 +25,7 @@ public class AudioPostController {
     public ResponseEntity<?> uploadAudioPost(Authentication authentication, @ModelAttribute AudioPostRequest request) {
         try {
             String username = authentication.getName();
-            Users user = userRepository.findByUsername(username)
+            User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             return ResponseEntity.ok(audioPostService.uploadAudioPost(user.getId(), request));
@@ -38,7 +38,7 @@ public class AudioPostController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AudioPostResponse>> getUserAudioPosts(@PathVariable int userId) {
+    public ResponseEntity<List<AudioPostResponse>> getUserAudioPosts(@PathVariable Long userId) {
         return ResponseEntity.ok(audioPostService.getUserAudioPosts(userId));
     }
 
@@ -55,7 +55,7 @@ public class AudioPostController {
     public ResponseEntity<?> deleteAudioPost(Authentication authentication, @PathVariable Long id) {
         try {
             String username = authentication.getName();
-            Users user = userRepository.findByUsername(username)
+            User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             audioPostService.deleteAudioPost(user.getId(), id);

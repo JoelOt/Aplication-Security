@@ -3,10 +3,10 @@ package soundhub.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import soundhub.dtos.AudioPostRequest;
-import soundhub.dtos.AudioPostResponse;
+import soundhub.dto.AudioPostRequest;
+import soundhub.dto.AudioPostResponse;
 import soundhub.entities.AudioPost;
-import soundhub.entities.Users;
+import soundhub.entities.User;
 import soundhub.repositories.AudioPostRepository;
 import soundhub.repositories.UserRepository;
 
@@ -34,8 +34,8 @@ public class AudioPostService {
         this.coverDir = baseDir + "/covers/";
     }
 
-    public AudioPostResponse uploadAudioPost(int userId, AudioPostRequest request) throws IOException {
-        Users user = userRepository.findById(userId)
+    public AudioPostResponse uploadAudioPost(Long userId, AudioPostRequest request) throws IOException {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Validate file extensions and size
@@ -65,7 +65,7 @@ public class AudioPostService {
                 user.getUsername());
     }
 
-    public void deleteAudioPost(int userId, Long postId) {
+    public void deleteAudioPost(Long userId, Long postId) {
         AudioPost post = audioPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("AudioPost not found"));
 
@@ -79,7 +79,7 @@ public class AudioPostService {
         audioPostRepository.delete(post);
     }
 
-    public List<AudioPostResponse> getUserAudioPosts(int userId) {
+    public List<AudioPostResponse> getUserAudioPosts(Long userId) {
         return audioPostRepository.findByUserId(userId).stream()
                 .map(p -> new AudioPostResponse(
                         p.getId(),

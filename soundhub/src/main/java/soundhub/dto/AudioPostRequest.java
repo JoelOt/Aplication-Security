@@ -1,4 +1,4 @@
-package soundhub.dtos;
+package soundhub.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 

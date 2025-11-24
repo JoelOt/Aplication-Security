@@ -2,38 +2,38 @@ package soundhub.utils;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.stereotype.Component;
 
 @Converter
 @Component
+@RequiredArgsConstructor
 public class EncryptorConverter implements AttributeConverter<String, String> {
 
     private static StringEncryptor encryptor;
 
-    public static void setEncryptor(StringEncryptor encryptor) {
-        EncryptorConverter.encryptor = encryptor;
-    }
-
     @Override
     public String convertToDatabaseColumn(String attribute) {
-        if (attribute == null)
-            return null;
+        if (attribute == null || attribute.isEmpty()) {
+            return attribute;
+        }
         try {
             return encryptor.encrypt(attribute);
         } catch (Exception e) {
-            throw new RuntimeException("Error encrypting data", e);
+            throw new IllegalStateException("Error encrypting value: " + attribute, e);
         }
     }
 
     @Override
-    public String convertToEntityAttribute(String dbData) {
-        if (dbData == null)
-            return null;
+    public String convertToEntityAttribute(String dataBaseData) {
+        if (dataBaseData == null || dataBaseData.isEmpty()) {
+            return dataBaseData;
+        }
         try {
-            return encryptor.decrypt(dbData);
+            return encryptor.decrypt(dataBaseData);
         } catch (Exception e) {
-            throw new RuntimeException("Error decrypting data", e);
+            throw new IllegalStateException("Error decrypting database value", e);
         }
     }
 }
