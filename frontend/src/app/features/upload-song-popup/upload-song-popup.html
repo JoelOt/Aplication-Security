@@ -102,5 +102,39 @@
                 </button>
             </div>
         </form>
+
+        <!-- Upload Status Overlay -->
+        <div class="upload-status-overlay" *ngIf="uploadStatus !== 'idle'">
+            <div class="status-content">
+                <!-- Analyzing State -->
+                <div class="status-icon" *ngIf="uploadStatus === 'analyzing'">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Success State -->
+                <div class="status-icon success" *ngIf="uploadStatus === 'success'">
+                    <svg viewBox="0 0 52 52" class="checkmark">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+
+                <!-- Error State -->
+                <div class="status-icon error" *ngIf="uploadStatus === 'error'">
+                    <svg viewBox="0 0 52 52" class="crossmark">
+                        <circle class="crossmark-circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="crossmark-line" fill="none" d="M16 16 36 36 M36 16 16 36" />
+                    </svg>
+                </div>
+
+                <h3 class="status-message">{{ uploadMessage }}</h3>
+                <p class="status-detail" *ngIf="uploadStatus === 'analyzing'">
+                    This may take up to 5 minutes...
+                </p>
+                <p class="status-detail error-detail" *ngIf="uploadStatus === 'error' && errorMessage">
+                    {{ errorMessage }}
+                </p>
+            </div>
+        </div>
     </div>
 </div>

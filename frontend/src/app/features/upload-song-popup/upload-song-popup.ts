@@ -22,6 +22,10 @@ export class UploadSongPopup {
     errorMessage: string = '';
     audioFileName: string = '';
 
+    // Upload status states
+    uploadStatus: 'idle' | 'analyzing' | 'success' | 'error' = 'idle';
+    uploadMessage: string = '';
+
     genres: string[] = [
         'Rock',
         'Pop',
@@ -129,6 +133,8 @@ export class UploadSongPopup {
         }
 
         this.isUploading = true;
+        this.uploadStatus = 'analyzing';
+        this.uploadMessage = 'Analyzing files with VirusTotal...';
         this.errorMessage = '';
 
         // Sanitize inputs
@@ -153,13 +159,30 @@ export class UploadSongPopup {
         this.api.uploadSong(formData).subscribe({
             next: () => {
                 this.isUploading = false;
-                this.uploadSuccess.emit();
-                this.resetForm();
-                this.closePopup.emit();
+                this.uploadStatus = 'success';
+                this.uploadMessage = 'Successfully uploaded!';
+
+                // Wait 2 seconds to show success message, then close
+                setTimeout(() => {
+                    this.uploadSuccess.emit();
+                    this.resetForm();
+                    this.closePopup.emit();
+                }, 2000);
             },
             error: (err) => {
                 this.isUploading = false;
-                this.errorMessage = err.error?.message || 'Failed to upload song. Please try again.';
+                this.uploadStatus = 'error';
+
+                // Check if it's a malicious file error
+                const errorMsg = err.error?.message || 'Failed to upload song. Please try again.';
+                if (errorMsg.includes('malicious') || errorMsg.includes('rejected')) {
+                    this.uploadMessage = 'Corrupted File';
+                    this.errorMessage = 'The file contains malicious content and was rejected.';
+                } else {
+                    this.uploadMessage = 'Upload Failed';
+                    this.errorMessage = errorMsg;
+                }
+
                 console.error('Upload error:', err);
             }
         });
@@ -176,6 +199,8 @@ export class UploadSongPopup {
         this.coverImagePreview = null;
         this.audioFileName = '';
         this.errorMessage = '';
+        this.uploadStatus = 'idle';
+        this.uploadMessage = '';
     }
 
     /**

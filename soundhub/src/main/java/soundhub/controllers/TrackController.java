@@ -11,6 +11,7 @@ import soundhub.entities.AudioPost;
 import soundhub.entities.User;
 import soundhub.repositories.AudioPostRepository;
 import soundhub.repositories.UserRepository;
+import soundhub.services.VirusTotalService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +28,7 @@ public class TrackController {
 
     private final AudioPostRepository audioPostRepository;
     private final UserRepository userRepository;
+    private final VirusTotalService virusTotalService;
 
     @Value("${storage.base-dir}")
     private String baseDir;
@@ -62,6 +64,24 @@ public class TrackController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("message", "Cover image is required"));
             }
+
+            // Scan audio file with VirusTotal
+            System.out.println("Scanning audio file with VirusTotal...");
+            boolean audioSafe = virusTotalService.isFileSafe(audioFile);
+            if (!audioSafe) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Audio file contains malicious content and was rejected"));
+            }
+
+            // Scan cover image with VirusTotal
+            System.out.println("Scanning cover image with VirusTotal...");
+            boolean coverSafe = virusTotalService.isFileSafe(coverFile);
+            if (!coverSafe) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Cover image contains malicious content and was rejected"));
+            }
+
+            System.out.println("Both files passed VirusTotal scan. Proceeding with upload...");
 
             // Create directories if they don't exist
             Path audioDir = Paths.get(baseDir, "audio");
@@ -102,6 +122,11 @@ public class TrackController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Failed to upload files: " + e.getMessage()));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "VirusTotal scan was interrupted: " + e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

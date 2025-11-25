@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ApiService } from '../../core/api.service'; // Importa tu servicio central
+import { ApiService } from '../../core/api.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'media-player',
@@ -20,17 +21,21 @@ export class MediaPlayer implements OnInit, OnDestroy {
   isPlaying = false;
 
   private audio: HTMLAudioElement | null = null;
+  private trackSubscription?: Subscription;
+  private progressInterval?: any;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private api: ApiService // inyecta el servicio
+    private api: ApiService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit() {
     // Solo ejecutar en el navegador
     if (isPlatformBrowser(this.platformId)) {
       // Listen for track changes from the shared service
-      this.api.currentTrack$.subscribe(track => {
+      this.trackSubscription = this.api.currentTrack$.subscribe(track => {
         if (track) {
           this.loadTrack(track);
         } else {
@@ -45,15 +50,20 @@ export class MediaPlayer implements OnInit, OnDestroy {
   }
 
   private loadTrack(track: { trackName: string; artistName: string; trackImage: string; audioUrl: string; duration?: number }) {
+    console.log('Loading track:', track);
+
+    // Update track info
     this.trackName = track.trackName;
     this.artistName = track.artistName;
     this.trackImage = track.trackImage;
 
     // Clean up previous audio if exists
-    if (this.audio) {
-      this.audio.pause();
-      this.audio = null;
-    }
+    this.cleanupAudio();
+
+    // Reset state
+    this.isPlaying = false;
+    this.progress = 0;
+    this.currentTime = '0:00';
 
     // Create new audio element
     this.audio = new Audio(track.audioUrl);
@@ -64,26 +74,74 @@ export class MediaPlayer implements OnInit, OnDestroy {
       this.totalTime = this.formatTime(track.duration);
     } else {
       this.audio.addEventListener('loadedmetadata', () => {
-        this.totalTime = this.formatTime(this.audio!.duration);
+        if (this.audio) {
+          this.totalTime = this.formatTime(this.audio.duration);
+          this.cdr.detectChanges();
+        }
       });
     }
 
     // Add event listeners
-    this.audio.addEventListener('timeupdate', () => this.updateProgress());
     this.audio.addEventListener('ended', () => {
-      this.isPlaying = false;
-      this.progress = 0;
+      this.ngZone.run(() => {
+        this.isPlaying = false;
+        this.progress = 0;
+        this.currentTime = '0:00';
+        this.stopProgressUpdate();
+        this.cdr.detectChanges();
+      });
     });
 
     // Auto-play the new track
-    this.audio.play();
-    this.isPlaying = true;
+    this.audio.play().then(() => {
+      this.isPlaying = true;
+      this.startProgressUpdate();
+      this.cdr.detectChanges();
+    }).catch(error => {
+      console.error('Error playing audio:', error);
+      this.isPlaying = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  private cleanupAudio() {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+
+      // Remove all event listeners by replacing the audio element
+      this.audio.src = '';
+      this.audio.load();
+      this.audio = null;
+    }
+
+    this.stopProgressUpdate();
+  }
+
+  private startProgressUpdate() {
+    this.stopProgressUpdate();
+
+    // Update progress every second
+    this.progressInterval = setInterval(() => {
+      this.ngZone.run(() => {
+        this.updateProgress();
+        this.cdr.detectChanges();
+      });
+    }, 1000);
+  }
+
+  private stopProgressUpdate() {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
   }
 
   ngOnDestroy() {
-    if (this.audio) {
-      this.audio.pause();
-      this.audio = null;
+    this.cleanupAudio();
+
+    if (this.trackSubscription) {
+      this.trackSubscription.unsubscribe();
     }
   }
 
@@ -110,6 +168,7 @@ export class MediaPlayer implements OnInit, OnDestroy {
 
     this.audio.currentTime = (percentage / 100) * this.audio.duration;
     this.progress = percentage;
+    this.updateProgress();
   }
 
   togglePlay() {
@@ -117,18 +176,29 @@ export class MediaPlayer implements OnInit, OnDestroy {
 
     if (this.isPlaying) {
       this.audio.pause();
+      this.stopProgressUpdate();
+      this.isPlaying = false;
     } else {
-      this.audio.play();
+      this.audio.play().then(() => {
+        this.isPlaying = true;
+        this.startProgressUpdate();
+      }).catch(error => {
+        console.error('Error playing audio:', error);
+        this.isPlaying = false;
+      });
     }
-    this.isPlaying = !this.isPlaying;
+
+    this.cdr.detectChanges();
   }
 
   skipNext() {
     console.log('Next track');
+    // TODO: Implement next track logic
   }
 
   skipPrevious() {
     console.log('Previous track');
+    // TODO: Implement previous track logic
   }
 
   private updateProgress() {
@@ -139,6 +209,10 @@ export class MediaPlayer implements OnInit, OnDestroy {
   }
 
   private formatTime(seconds: number): string {
+    if (isNaN(seconds) || !isFinite(seconds)) {
+      return '0:00';
+    }
+
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;

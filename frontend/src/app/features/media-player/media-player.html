@@ -1,7 +1,7 @@
 <div class="media-player-container">
     <!-- Sección izquierda: Info de la canción -->
     <div class="track-info">
-        <img src="/song-cover.jpg" alt="Album Cover" class="album-cover" />
+        <img [src]="trackImage" alt="Album Cover" class="album-cover" />
         <div class="track-details">
             <span class="track-name">{{ trackName }}</span>
             <span class="artist-name">{{ artistName }}</span>
@@ -22,7 +22,7 @@
             <span class="material-symbols-outlined control-btn" (click)="skipNext()">skip_next</span>
             <span class="material-symbols-outlined control-btn">repeat</span>
         </div>
-        
+
         <div class="progress-bar-container">
             <span class="time-current">{{ currentTime }}</span>
             <div class="progress-bar" (click)="seekTrack($event)">
