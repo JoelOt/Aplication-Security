@@ -1,4 +1,4 @@
-package soundhub.dtos;
+package soundhub.dto;
 
 public record AudioPostResponse(
         Long id,

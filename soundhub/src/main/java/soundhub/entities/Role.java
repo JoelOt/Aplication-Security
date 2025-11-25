@@ -1,6 +1,7 @@
 package soundhub.entities;
 
 public enum Role {
-    ARTIST,
-    REGULAR
+    ROLE_ARTIST,
+    ROLE_REGULAR,
+    ROLE_ADMIN
 }

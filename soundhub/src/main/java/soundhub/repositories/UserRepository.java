@@ -2,13 +2,14 @@ package soundhub.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import soundhub.entities.Users;
+import soundhub.entities.User;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<Users, Integer> {
-    Optional<Users> findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findByUsername(String username);
 
     boolean existsByUsername(String username);
 

@@ -10,9 +10,9 @@ import java.util.Optional;
 @Repository
 public interface AudioPostRepository extends JpaRepository<AudioPost, Long> {
 
-    List<AudioPost> findByUserId(int userId);
+    List<AudioPost> findByUserId(Long userId);
 
-    Optional<AudioPost> findByUserIdAndTitle(int userId, String title);
+    Optional<AudioPost> findByUserIdAndTitle(Long userId, String title);
 
     List<AudioPost> findByTitleContainingIgnoreCase(String title);
 }
