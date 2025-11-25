@@ -4,6 +4,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.StringEncryptor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Converter
@@ -11,7 +12,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EncryptorConverter implements AttributeConverter<String, String> {
 
-    private static StringEncryptor encryptor;
+    @Qualifier("jasyptStringEncryptor")
+    private final StringEncryptor encryptor;
 
     @Override
     public String convertToDatabaseColumn(String attribute) {

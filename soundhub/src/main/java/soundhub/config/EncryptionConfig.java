@@ -6,6 +6,7 @@ import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class EncryptionConfig {
@@ -28,6 +29,7 @@ public class EncryptionConfig {
     @Value("${encryption.output-type:base64}")
     private String outputType;
 
+    @Primary
     @Bean("jasyptStringEncryptor")
     public StringEncryptor jasyptStringEncryptor() {
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
