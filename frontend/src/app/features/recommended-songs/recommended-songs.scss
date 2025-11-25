@@ -134,4 +134,38 @@
             background: #3e3e3e;
         }
     }
+
+    // Floating Action Button
+    .fab {
+        position: fixed;
+        bottom: 100px; // Above media player
+        right: 32px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #1db954;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 200ms ease;
+        z-index: 100;
+
+        .material-symbols-outlined {
+            font-size: 28px;
+            color: #000000;
+        }
+
+        &:hover {
+            background: #1ed760;
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../../core/api.service';
+import { UploadSongPopup } from '../upload-song-popup/upload-song-popup';
 
 interface Song {
   id: number;
@@ -12,12 +13,13 @@ interface Song {
 
 @Component({
   selector: 'recommended-songs',
-  imports: [CommonModule],
+  imports: [CommonModule, UploadSongPopup],
   templateUrl: './recommended-songs.html',
   styleUrl: './recommended-songs.scss',
 })
 export class RecommendedSongs implements OnInit {
   recommendedSongs: Song[] = [];
+  showUploadPopup: boolean = false;
 
   constructor(
     private api: ApiService,
@@ -58,5 +60,18 @@ export class RecommendedSongs implements OnInit {
       trackImage: song.coverImage,
       audioUrl: song.audioUrl || `http://localhost:8082/tracks/${song.id}/audio`
     });
+  }
+
+  openUploadPopup() {
+    this.showUploadPopup = true;
+  }
+
+  closeUploadPopup() {
+    this.showUploadPopup = false;
+  }
+
+  onUploadSuccess() {
+    // Refresh the recommended songs list after successful upload
+    this.loadRecommendedSongs();
   }
 }

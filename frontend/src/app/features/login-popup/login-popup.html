@@ -23,8 +23,16 @@
           <input id="username_email" class="input-thing" type="text" formControlName="username_email"
             placeholder="Enter your username or email"
             [class.error]="username_email?.invalid && username_email?.touched" />
-          <div class="error-row"><span class="error-message"
-              [class.visible]="username_email?.invalid && username_email?.touched">Username or email is required</span>
+          <div class="error-row">
+            <span class="error-message" *ngIf="username_email?.hasError('required') && username_email?.touched"
+              [class.visible]="username_email?.hasError('required') && username_email?.touched">Username or email is
+              required</span>
+            <span class="error-message" *ngIf="username_email?.hasError('xssDetected') && username_email?.touched"
+              [class.visible]="username_email?.hasError('xssDetected') && username_email?.touched">Invalid characters
+              detected</span>
+            <span class="error-message" *ngIf="username_email?.hasError('maxlength') && username_email?.touched"
+              [class.visible]="username_email?.hasError('maxlength') && username_email?.touched">Maximum 100 characters
+              allowed</span>
           </div>
         </div>
 
@@ -43,16 +51,33 @@
           <label class="form-text" for="username">Username</label>
           <input id="username" class="input-thing" type="text" formControlName="username"
             placeholder="Choose a username" [class.error]="username?.invalid && username?.touched" />
-          <div class="error-row"><span class="error-message"
-              [class.visible]="username?.invalid && username?.touched">Username is required</span></div>
+          <div class="error-row">
+            <span class="error-message" *ngIf="username?.hasError('required') && username?.touched"
+              [class.visible]="username?.hasError('required') && username?.touched">Username is required</span>
+            <span class="error-message" *ngIf="username?.hasError('pattern') && username?.touched"
+              [class.visible]="username?.hasError('pattern') && username?.touched">Only letters, numbers, underscores
+              and hyphens allowed</span>
+            <span class="error-message" *ngIf="username?.hasError('xssDetected') && username?.touched"
+              [class.visible]="username?.hasError('xssDetected') && username?.touched">Invalid characters
+              detected</span>
+            <span class="error-message" *ngIf="username?.hasError('minlength') && username?.touched"
+              [class.visible]="username?.hasError('minlength') && username?.touched">Minimum 3 characters
+              required</span>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="form-text" for="id">ID</label>
           <input id="id" class="input-thing" type="text" formControlName="id" placeholder="Enter your ID"
             [class.error]="id?.invalid && id?.touched" />
-          <div class="error-row"><span class="error-message" [class.visible]="id?.invalid && id?.touched">ID is
-              required</span></div>
+          <div class="error-row">
+            <span class="error-message" *ngIf="id?.hasError('required') && id?.touched"
+              [class.visible]="id?.hasError('required') && id?.touched">ID is required</span>
+            <span class="error-message" *ngIf="id?.hasError('pattern') && id?.touched"
+              [class.visible]="id?.hasError('pattern') && id?.touched">Only letters, numbers and hyphens allowed</span>
+            <span class="error-message" *ngIf="id?.hasError('xssDetected') && id?.touched"
+              [class.visible]="id?.hasError('xssDetected') && id?.touched">Invalid characters detected</span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -68,16 +93,30 @@
           <label class="form-text" for="email">Email</label>
           <input id="email" class="input-thing" type="email" formControlName="email" placeholder="Enter your email"
             [class.error]="email?.invalid && email?.touched" />
-          <div class="error-row"><span class="error-message" [class.visible]="email?.invalid && email?.touched">Valid
-              email required</span></div>
+          <div class="error-row">
+            <span class="error-message" *ngIf="email?.hasError('required') && email?.touched"
+              [class.visible]="email?.hasError('required') && email?.touched">Email is required</span>
+            <span class="error-message" *ngIf="email?.hasError('pattern') && email?.touched"
+              [class.visible]="email?.hasError('pattern') && email?.touched">Invalid email format</span>
+            <span class="error-message" *ngIf="email?.hasError('xssDetected') && email?.touched"
+              [class.visible]="email?.hasError('xssDetected') && email?.touched">Invalid characters detected</span>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="form-text" for="password">Password</label>
           <input id="password_signup" class="input-thing" type="password" formControlName="password"
             placeholder="Create a password" [class.error]="password?.invalid && password?.touched" />
-          <div class="error-row"><span class="error-message"
-              [class.visible]="password?.invalid && password?.touched">Password is required</span></div>
+          <div class="error-row">
+            <span class="error-message" *ngIf="password?.hasError('required') && password?.touched"
+              [class.visible]="password?.hasError('required') && password?.touched">Password is required</span>
+            <span class="error-message" *ngIf="password?.hasError('minlength') && password?.touched"
+              [class.visible]="password?.hasError('minlength') && password?.touched">Minimum 8 characters
+              required</span>
+            <span class="error-message" *ngIf="password?.hasError('xssDetected') && password?.touched"
+              [class.visible]="password?.hasError('xssDetected') && password?.touched">Invalid characters
+              detected</span>
+          </div>
         </div>
 
         <div class="form-group">

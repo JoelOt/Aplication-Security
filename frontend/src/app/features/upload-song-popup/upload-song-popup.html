@@ -1,0 +1,106 @@
+<div class="popup-overlay" (click)="onClose()">
+    <div class="popup-dialog" (click)="$event.stopPropagation()">
+        <div class="popup-header">
+            <h2>Upload Song</h2>
+            <button class="close-btn" (click)="onClose()" aria-label="Close">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+
+        <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="upload-form">
+            <!-- Audio File Input -->
+            <div class="form-group">
+                <label class="form-label">Audio File *</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="audioFile" accept=".mp3,.wav,audio/mpeg,audio/wav"
+                        (change)="onAudioFileSelected($event)" class="file-input" />
+                    <label for="audioFile" class="file-input-label">
+                        <span class="material-symbols-outlined">audio_file</span>
+                        <span>{{ audioFileName || 'Choose Audio File' }}</span>
+                    </label>
+                </div>
+                <span class="file-hint">Supported formats: MP3, WAV (max 50MB)</span>
+            </div>
+
+            <!-- Cover Image Input -->
+            <div class="form-group">
+                <label class="form-label">Cover Image *</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="coverImage" accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                        (change)="onCoverImageSelected($event)" class="file-input" />
+                    <label for="coverImage" class="file-input-label">
+                        <span class="material-symbols-outlined">image</span>
+                        <span>{{ coverImageFile ? coverImageFile.name : 'Choose Cover Image' }}</span>
+                    </label>
+                </div>
+                <span class="file-hint">Supported formats: JPG, PNG (max 5MB)</span>
+
+                <!-- Image Preview -->
+                <div *ngIf="coverImagePreview" class="image-preview">
+                    <img [src]="coverImagePreview" alt="Cover preview" />
+                </div>
+            </div>
+
+            <!-- Title Input -->
+            <div class="form-group">
+                <label class="form-label" for="title">Song Title *</label>
+                <input id="title" type="text" formControlName="title" placeholder="Enter song title" class="text-input"
+                    style="width: 92%;" [class.error]="title?.invalid && title?.touched" />
+                <div class="error-row">
+                    <span class="error-message" *ngIf="title?.hasError('required') && title?.touched"
+                        [class.visible]="title?.hasError('required') && title?.touched">
+                        Title is required
+                    </span>
+                    <span class="error-message" *ngIf="title?.hasError('maxlength') && title?.touched"
+                        [class.visible]="title?.hasError('maxlength') && title?.touched">
+                        Maximum 100 characters allowed
+                    </span>
+                </div>
+            </div>
+
+            <!-- Description Input -->
+            <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea id="description" formControlName="description" placeholder="Enter song description (optional)"
+                    class="text-input" style="width: 92%; height: 80px; resize: vertical;"
+                    [class.error]="description?.invalid && description?.touched"></textarea>
+                <div class="error-row">
+                    <span class="error-message" *ngIf="description?.hasError('maxlength') && description?.touched"
+                        [class.visible]="description?.hasError('maxlength') && description?.touched">
+                        Maximum 500 characters allowed
+                    </span>
+                </div>
+            </div>
+
+            <!-- Genre Dropdown -->
+            <div class="form-group">
+                <label class="form-label" for="genre">Genre *</label>
+                <select id="genre" formControlName="genre" class="select-input"
+                    [class.error]="genre?.invalid && genre?.touched">
+                    <option value="" disabled selected>Select a genre</option>
+                    <option *ngFor="let g of genres" [value]="g">{{ g }}</option>
+                </select>
+                <div class="error-row">
+                    <span class="error-message" *ngIf="genre?.hasError('required') && genre?.touched"
+                        [class.visible]="genre?.hasError('required') && genre?.touched">
+                        Genre is required
+                    </span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" (click)="onClose()" [disabled]="isUploading">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="isUploading">
+                    <span *ngIf="!isUploading">Upload Song</span>
+                    <span *ngIf="isUploading">Uploading...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

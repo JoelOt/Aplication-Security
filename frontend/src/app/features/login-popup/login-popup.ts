@@ -24,19 +24,70 @@ export class LoginPopup {
     private api: ApiService
   ) {
     this.loginForm = this.fb.group({
-      username_email: ['', [Validators.required]],
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      id: ['', [Validators.required, Validators.minLength(8)]],
-      dob: ['', [Validators.required, this.dobValidator()]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, this.isSamePasswordValidator()]],
-      role: ['', [Validators.required]]
+      // Login field: allow alphanumeric, dots, underscores, hyphens, and @ for email
+      username_email: ['', [
+        Validators.required,
+        Validators.maxLength(100),
+        this.noXSSValidator()
+      ]],
+
+      // Username: only alphanumeric, underscores, hyphens
+      username: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        Validators.pattern(/^[a-zA-Z0-9_-]+$/),
+        this.noXSSValidator()
+      ]],
+
+      // ID/DNI: only alphanumeric and hyphens
+      id: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(20),
+        Validators.pattern(/^[a-zA-Z0-9-]+$/),
+        this.noXSSValidator()
+      ]],
+
+      // Date of birth
+      dob: ['', [
+        Validators.required,
+        this.dobValidator()
+      ]],
+
+      // Email: strict pattern validation
+      email: ['', [
+        Validators.required,
+        Validators.maxLength(100),
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
+        this.noXSSValidator()
+      ]],
+
+      // Password: allow most characters but block dangerous ones
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(128),
+        this.noXSSValidator()
+      ]],
+
+      // Confirm password
+      confirmPassword: ['', [
+        Validators.required,
+        this.isSamePasswordValidator()
+      ]],
+
+      // Role: only alphabetic characters
+      role: ['', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z]+$/)
+      ]]
     });
   }
 
 
   onSubmit() {
+    console.log(this.loginForm.value);
     // In login mode we only need username/email and password, so skip full form validation
     if (this.isLoginMode) {
       // Ensure required login fields are present
@@ -62,8 +113,8 @@ export class LoginPopup {
 
     if (this.isLoginMode) {
       // Login
-      const username = this.loginForm.get('username_email')?.value;
-      const password = this.loginForm.get('password')?.value;
+      const username = this.sanitizeInput(this.loginForm.get('username_email')?.value);
+      const password = this.loginForm.get('password')?.value; // Don't sanitize password, just use as-is
 
       this.api.login(username, password).subscribe({
         next: (response) => {
@@ -87,17 +138,19 @@ export class LoginPopup {
         }
       });
     } else {
-      // Register
+      // Register - sanitize all inputs before sending to backend
       const userData = {
-        name: this.loginForm.get('username')?.value, // Using username as name for now
+        name: this.sanitizeInput(this.loginForm.get('username')?.value),
         surname: 'User', // Default surname
-        username: this.loginForm.get('username')?.value,
-        email: this.loginForm.get('email')?.value,
-        dni: this.loginForm.get('id')?.value,
+        username: this.sanitizeInput(this.loginForm.get('username')?.value),
+        email: this.sanitizeInput(this.loginForm.get('email')?.value),
+        dni: this.sanitizeInput(this.loginForm.get('id')?.value),
         age: this.calculateAge(this.loginForm.get('dob')?.value),
-        password: this.loginForm.get('password')?.value,
+        password: this.loginForm.get('password')?.value, // Don't sanitize password
         role: this.loginForm.get('role')?.value.toUpperCase()
       };
+
+      console.log(userData);
 
       this.api.register(userData).subscribe({
         next: (response) => {
@@ -199,6 +252,54 @@ export class LoginPopup {
       }
       return null;
     };
+  }
+
+  /**
+   * Custom validator to detect and prevent XSS attacks
+   * Checks for dangerous patterns like script tags, event handlers, etc.
+   */
+  private noXSSValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      const dangerousPatterns = [
+        /<script[\s\S]*?>[\s\S]*?<\/script>/gi,  // Script tags
+        /<iframe[\s\S]*?>/gi,                     // Iframe tags
+        /javascript:/gi,                          // JavaScript protocol
+        /on\w+\s*=/gi,                            // Event handlers (onclick=, onerror=, etc.)
+        /<img[\s\S]*?onerror[\s\S]*?>/gi,        // Image with onerror
+        /<svg[\s\S]*?onload[\s\S]*?>/gi,         // SVG with onload
+        /eval\s*\(/gi,                            // eval() function
+        /expression\s*\(/gi,                      // CSS expression()
+        /<embed[\s\S]*?>/gi,                      // Embed tags
+        /<object[\s\S]*?>/gi,                     // Object tags
+        /<[^>]*>/g                                // Any HTML tags
+      ];
+
+      for (const pattern of dangerousPatterns) {
+        if (pattern.test(value)) {
+          return { xssDetected: true };
+        }
+      }
+
+      return null;
+    };
+  }
+
+  /**
+   * Sanitize user input before sending to backend
+   * Removes dangerous characters and limits length
+   */
+  private sanitizeInput(input: string): string {
+    if (!input) return '';
+
+    return input
+      .trim()
+      .replace(/[<>]/g, '')           // Remove < and >
+      .replace(/javascript:/gi, '')   // Remove javascript: protocol
+      .replace(/on\w+\s*=/gi, '')     // Remove event handlers
+      .substring(0, 200);             // Limit length
   }
 
 }

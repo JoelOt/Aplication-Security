@@ -30,6 +30,12 @@ export class ApiService {
     });
   }
 
+  uploadSong(formData: FormData): Observable<any> {
+    console.log("uploading song");
+    console.log(formData);
+    return this.http.post(`${this.baseUrl}/tracks/upload`, formData);
+  }
+
   post<T>(endpoint: string, body: any, options: any = {}): Observable<T> {
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body, options) as Observable<T>;
   }
