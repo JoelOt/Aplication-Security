@@ -101,7 +101,16 @@
             <version>0.0.20131108.vaadin1</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.20</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mpatric</groupId>
+            <artifactId>mp3agic</artifactId>
+            <version>0.9.1</version>
+        </dependency>
     </dependencies>
 
     <build>
