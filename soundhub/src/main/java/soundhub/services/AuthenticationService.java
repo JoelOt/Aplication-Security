@@ -34,6 +34,11 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Dni already exists");
         }
 
+        // Determine role based on isArtist boolean
+        Role userRole = (request.getIsArtist() != null && request.getIsArtist()) 
+                ? Role.ROLE_ARTIST 
+                : Role.ROLE_REGULAR;
+
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -42,7 +47,7 @@ public class AuthenticationService {
                 .dni(request.getDni())
                 .age(request.getAge())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_REGULAR)
+                .role(userRole)
                 .build();
 
         user = userService.save(user);

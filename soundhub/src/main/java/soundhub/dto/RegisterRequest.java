@@ -37,4 +37,6 @@ public class RegisterRequest {
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    private Boolean isArtist = false; // Default to regular user
 }

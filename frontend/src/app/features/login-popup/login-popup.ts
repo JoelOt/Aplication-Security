@@ -77,16 +77,17 @@ export class LoginPopup {
         this.isSamePasswordValidator()
       ]],
 
-      // Role: only alphabetic characters
+      // Role: only 'author' or 'user'
       role: ['', [
         Validators.required,
-        Validators.pattern(/^[a-zA-Z]+$/)
+        Validators.pattern(/^(author|user)$/i)
       ]]
     });
   }
 
 
   onSubmit() {
+    console.log('Form submitted');
     console.log(this.loginForm.value);
     // In login mode we only need username/email and password, so skip full form validation
     if (this.isLoginMode) {
@@ -101,11 +102,13 @@ export class LoginPopup {
     } else {
       // Registration mode: validate the whole form
       if (!this.loginForm.valid) {
+        console.log("11111111");
         this.loginForm.markAllAsTouched();
         return;
       }
     }
 
+    console.log("2222");
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -139,27 +142,31 @@ export class LoginPopup {
       });
     } else {
       // Register - sanitize all inputs before sending to backend
+      console.log("33333333333");
+
+      const roleValue = this.loginForm.get('role')?.value.toLowerCase();
       const userData = {
-        name: this.sanitizeInput(this.loginForm.get('username')?.value),
-        surname: 'User', // Default surname
+        firstName: this.sanitizeInput(this.loginForm.get('username')?.value),
+        lastName: 'User', // Default surname
         username: this.sanitizeInput(this.loginForm.get('username')?.value),
         email: this.sanitizeInput(this.loginForm.get('email')?.value),
         dni: this.sanitizeInput(this.loginForm.get('id')?.value),
         age: this.calculateAge(this.loginForm.get('dob')?.value),
         password: this.loginForm.get('password')?.value, // Don't sanitize password
-        role: this.loginForm.get('role')?.value.toUpperCase()
+        isArtist: roleValue === 'author' // true if author, false if user
       };
 
-      console.log(userData);
-
+      console.log("44444444444");
       this.api.register(userData).subscribe({
         next: (response) => {
+          console.log(response);
           this.isLoading = false;
           // Auto-login after registration
           this.isLoginMode = true;
           this.successMessage = 'Registration successful! Please login.';
         },
         error: (err) => {
+          console.log(err);
           this.isLoading = false;
           this.errorMessage = err.error?.message || 'Registration failed';
         }
