@@ -28,7 +28,7 @@
             </div>
         </ng-container>
 
-        <div class="profile-icon" *ngIf="isLoggedIn" routerLink="/profile" style="cursor: pointer;">
+        <div class="profile-icon" *ngIf="isLoggedIn" (click)="openProfilePopup()" style="cursor: pointer;">
             <img src="/user.png" alt="Profile Icon" class="profile-image" />
         </div>
     </div>
@@ -38,5 +38,12 @@
 <div class="popup-overlay" *ngIf="showLoginPopup" (click)="closeLoginPopup()">
     <div class="popup-content" (click)="$event.stopPropagation()">
         <login-popup [isLoginMode]="isLoginMode" (closePopup)="closeLoginPopup()"></login-popup>
+    </div>
+</div>
+
+<!-- Profile Popup Overlay -->
+<div class="popup-overlay" *ngIf="showProfilePopup" (click)="closeProfilePopup()">
+    <div class="popup-content" (click)="$event.stopPropagation()">
+        <app-profile></app-profile>
     </div>
 </div>

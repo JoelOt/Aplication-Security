@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/api.service';
 import { LoginPopup } from '../login-popup/login-popup';
+import { ProfileComponent } from '../profile/profile';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'header',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoginPopup, RouterModule],
+  imports: [CommonModule, FormsModule, LoginPopup, RouterModule, ProfileComponent],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -16,11 +17,15 @@ export class Header implements OnInit {
 
   public searchQuery: string = '';
   public showLoginPopup: boolean = false;
+  public showProfilePopup: boolean = false;
   public isLoginMode: boolean = true;
   public isLoggedIn: boolean = false;
   public currentUser: any = null;
 
-  constructor(private api: ApiService) { }
+  constructor(
+    private api: ApiService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     console.log('Header initialized');
@@ -31,6 +36,7 @@ export class Header implements OnInit {
       this.api.getCurrentUser().subscribe({
         next: (user) => {
           this.api.setCurrentUser(user);
+          this.cdr.detectChanges(); // Force update
         },
         error: () => {
           this.logout();
@@ -42,6 +48,7 @@ export class Header implements OnInit {
     this.api.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.isLoggedIn = !!user;
+      this.cdr.detectChanges(); // Force update immediately
     });
   }
 
@@ -61,10 +68,19 @@ export class Header implements OnInit {
     this.api.logout();
     this.isLoggedIn = false;
     this.currentUser = null;
+    this.cdr.detectChanges(); // Force update on logout
   }
 
   closeLoginPopup() {
     this.showLoginPopup = false;
+  }
+
+  openProfilePopup() {
+    this.showProfilePopup = true;
+  }
+
+  closeProfilePopup() {
+    this.showProfilePopup = false;
   }
 
   onSearch() {
@@ -118,4 +134,3 @@ export class Header implements OnInit {
     return sanitized;
   }
 }
-

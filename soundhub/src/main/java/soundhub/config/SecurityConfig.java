@@ -36,7 +36,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/tracks/**", "/track/**", "/content/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/audio-posts/**").permitAll()
                         .anyRequest().authenticated()

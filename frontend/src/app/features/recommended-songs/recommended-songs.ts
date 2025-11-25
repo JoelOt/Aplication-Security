@@ -1,4 +1,4 @@
-import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../../core/api.service';
 import { UploadSongPopup } from '../upload-song-popup/upload-song-popup';
@@ -23,7 +23,8 @@ export class RecommendedSongs implements OnInit {
 
   constructor(
     private api: ApiService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -32,6 +33,7 @@ export class RecommendedSongs implements OnInit {
       this.api.searchResults$.subscribe(results => {
         if (results.length > 0) {
           this.recommendedSongs = results;
+          this.cdr.detectChanges();
         } else {
           // Si no hay búsqueda, cargar recomendados
           this.loadRecommendedSongs();
@@ -45,9 +47,11 @@ export class RecommendedSongs implements OnInit {
       .subscribe({
         next: (songs) => {
           this.recommendedSongs = songs;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Error al cargar canciones recomendadas', err);
+          this.cdr.detectChanges();
         }
       });
   }

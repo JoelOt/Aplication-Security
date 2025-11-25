@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'login-popup',
@@ -21,7 +22,8 @@ export class LoginPopup {
 
   constructor(
     private fb: FormBuilder,
-    private api: ApiService
+    private api: ApiService,
+    private router: Router
   ) {
     this.loginForm = this.fb.group({
       // Login field: allow alphanumeric, dots, underscores, hyphens, and @ for email
@@ -127,11 +129,13 @@ export class LoginPopup {
               this.api.setCurrentUser(user);
               this.isLoading = false;
               this.closePopup.emit();
+              this.router.navigate(['/main']); // Navigate to dashboard
             },
             error: (err) => {
               console.error('Error fetching user:', err);
               this.isLoading = false;
               this.closePopup.emit(); // Close anyway, token is valid
+              this.router.navigate(['/main']); // Navigate anyway
             }
           });
         },

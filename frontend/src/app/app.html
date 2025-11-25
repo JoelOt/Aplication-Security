@@ -1,7 +1,5 @@
 <main-dashboard *ngIf="isLoggedIn"></main-dashboard>
 
 <div class="app-login-overlay" *ngIf="!isLoggedIn">
-    <div class="popup-content">
-        <login-popup [isLoginMode]="true" [forced]="true"></login-popup>
-    </div>
+    <main-dashboard></main-dashboard>
 </div>
