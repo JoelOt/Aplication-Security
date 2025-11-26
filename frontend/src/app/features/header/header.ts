@@ -88,7 +88,11 @@ export class Header implements OnInit {
     const sanitizedQuery = this.sanitizeSearchInput(this.searchQuery);
 
     if (sanitizedQuery) {
+      // Si hay query, buscar
       this.api.searchTracks(sanitizedQuery);
+    } else {
+      // Si no hay query (campo vacío), limpiar búsqueda y mostrar todas las canciones
+      this.api.clearSearch();
     }
   }
 

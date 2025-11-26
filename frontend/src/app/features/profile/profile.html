@@ -18,7 +18,7 @@
                 <span class="value">{{ user.email }}</span>
             </div>
             <div class="detail-row">
-                <span class="label">DNI</span>
+                <span class="label">ID</span>
                 <span class="value">{{ user.dni }}</span>
             </div>
             <div class="detail-row">
@@ -31,4 +31,9 @@
             Loading profile...
         </div>
     </div>
+
+    <!-- Logout Floating Button -->
+    <button class="logout-fab" (click)="logout()" aria-label="Logout">
+        <span class="material-symbols-outlined">logout</span>
+    </button>
 </div>

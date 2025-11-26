@@ -43,7 +43,7 @@
     }
 
     .role-badge {
-        background-color: #007bff;
+        background-color: #c77dff;
         color: white;
         padding: 4px 12px;
         border-radius: 12px;
@@ -52,7 +52,7 @@
         text-transform: uppercase;
 
         &.artist {
-            background-color: #9c27b0; // Purple for artists
+            background-color: #4c0658; // Purple for artists
         }
     }
 }
@@ -88,4 +88,39 @@
     text-align: center;
     color: #a0a0a0;
     padding: 20px;
+}
+
+// Logout Floating Action Button
+.logout-fab {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #9D4EDD 0%, #C77DFF 100%);
+    border: none;
+    border-radius: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
+    transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+
+    &:hover {
+        transform: scale(1.1) rotate(15deg);
+        box-shadow: 0 8px 24px rgba(157, 78, 221, 0.6);
+        background: linear-gradient(135deg, #C77DFF 0%, #E0AAFF 100%);
+    }
+
+    &:active {
+        transform: scale(0.95) rotate(15deg);
+    }
+
+    .material-symbols-outlined {
+        font-size: 28px;
+        font-weight: 500;
+    }
 }
