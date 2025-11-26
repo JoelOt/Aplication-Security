@@ -53,7 +53,7 @@ export class RecommendedSongs implements OnInit {
         } else if (results.length > 0) {
           // Hay resultados de búsqueda, mostrarlos
           this.isSearching = true;
-          this.recommendedSongs = results;
+          this.recommendedSongs = results.reverse();
           this.cdr.detectChanges();
         } else {
           // Array vacío significa que no hay resultados para la búsqueda
@@ -69,7 +69,7 @@ export class RecommendedSongs implements OnInit {
     this.api.get<Song[]>('tracks/recommended')
       .subscribe({
         next: (songs) => {
-          this.recommendedSongs = songs;
+          this.recommendedSongs = songs.reverse();
           this.cdr.detectChanges();
         },
         error: (err) => {
