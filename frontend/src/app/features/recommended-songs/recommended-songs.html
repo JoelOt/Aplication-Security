@@ -2,7 +2,7 @@
   <h2 class="section-title">Recommended for you</h2>
 
   <div class="songs-grid">
-    <div class="song-card" *ngFor="let song of recommendedSongs" (click)="playSong(song)">
+    <div class="song-card" *ngFor="let song of recommendedSongs" (click)="showSongDetails(song)">
       <div class="song-image-container">
         <img [src]="song.coverImage" [alt]="song.title" class="song-image" />
         <div class="play-button-overlay">
@@ -16,12 +16,17 @@
     </div>
   </div>
 
-  <!-- Floating Action Button -->
-  <button class="fab" (click)="openUploadPopup()" aria-label="Upload song">
+  <!-- Floating Action Button (Only for Artists) -->
+  <button *ngIf="isArtist" class="fab" (click)="openUploadPopup()" aria-label="Upload song">
     <span class="material-symbols-outlined">upload</span>
   </button>
 
   <!-- Upload Song Popup -->
   <upload-song-popup *ngIf="showUploadPopup" (closePopup)="closeUploadPopup()" (uploadSuccess)="onUploadSuccess()">
   </upload-song-popup>
+
+  <!-- Song Details Popup -->
+  <song-details-popup *ngIf="selectedSong" [song]="selectedSong" (closePopup)="closeSongDetails()"
+    (playSong)="playFromPopup($event)">
+  </song-details-popup>
 </div>

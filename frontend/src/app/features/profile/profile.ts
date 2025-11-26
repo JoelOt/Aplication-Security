@@ -35,4 +35,9 @@ export class ProfileComponent implements OnInit {
             }
         });
     }
+
+    logout() {
+        this.api.logout();
+        this.router.navigate(['/']);
+    }
 }

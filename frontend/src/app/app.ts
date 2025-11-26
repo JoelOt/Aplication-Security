@@ -2,12 +2,11 @@ import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainDashboard } from './features/main-dashboard/main-dashboard';
 import { Header } from './features/header/header';
-import { LoginPopup } from './features/login-popup/login-popup';
 import { ApiService } from './core/api.service';
 
 @Component({
   selector: 'app-root',
-  imports: [MainDashboard, CommonModule, LoginPopup],
+  imports: [MainDashboard, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

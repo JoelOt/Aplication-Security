@@ -30,6 +30,12 @@ export class ApiService {
     });
   }
 
+  clearSearch() {
+    // Emit null to signal that search should be cleared
+    // This will trigger recommended-songs to load all songs
+    this.searchResultsSubject.next(null as any);
+  }
+
   uploadSong(formData: FormData): Observable<any> {
     console.log("uploading song");
     console.log(formData);
