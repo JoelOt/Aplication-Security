@@ -40,8 +40,7 @@ public class TrackController {
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false, defaultValue = "") String description,
             @RequestParam("genre") String genre,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         try {
             // Validate authentication
             if (authentication == null || authentication.getName() == null) {
@@ -59,7 +58,7 @@ public class TrackController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("message", "Audio file is required"));
             }
-            
+
             if (coverFile == null || coverFile.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("message", "Cover image is required"));
@@ -112,11 +111,10 @@ public class TrackController {
             audioPostRepository.save(audioPost);
 
             return ResponseEntity.ok(Map.of(
-                "message", "Track uploaded successfully",
-                "trackId", audioPost.getId(),
-                "audioPath", "audio/" + audioFileName,
-                "coverPath", "covers/" + coverFileName
-            ));
+                    "message", "Track uploaded successfully",
+                    "trackId", audioPost.getId(),
+                    "audioPath", "audio/" + audioFileName,
+                    "coverPath", "covers/" + coverFileName));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +136,7 @@ public class TrackController {
     public ResponseEntity<List<Map<String, Object>>> getRecommendedTracks() {
         List<AudioPost> posts = audioPostRepository.findAll();
 
-        String baseUrl = "http://localhost:8082";
+        String baseUrl = "https://localhost:4200/api";
 
         // Map to frontend expected format
         List<Map<String, Object>> result = posts.stream().map(post -> {
@@ -156,7 +154,7 @@ public class TrackController {
 
     @GetMapping("/track/current")
     public ResponseEntity<Map<String, Object>> getCurrentTrack() {
-        String baseUrl = "http://localhost:8082";
+        String baseUrl = "https://localhost:4200/api";
 
         // For demo purposes, return the first track or a dummy one
         return audioPostRepository.findAll().stream().findFirst()
@@ -177,7 +175,7 @@ public class TrackController {
             @org.springframework.web.bind.annotation.RequestParam String query) {
         List<AudioPost> posts = audioPostRepository.findByTitleContainingIgnoreCase(query);
 
-        String baseUrl = "http://localhost:8082";
+        String baseUrl = "https://localhost:4200/api";
 
         List<Map<String, Object>> result = posts.stream().map(post -> {
             Map<String, Object> map = new java.util.HashMap<>();
