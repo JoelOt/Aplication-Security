@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/api.service';
@@ -23,12 +23,13 @@ export class LoginPopup {
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       // Login field: allow alphanumeric, dots, underscores, hyphens, and @ for email
+      // Note: required validation is handled manually in onSubmit for login mode
       username_email: ['', [
-        Validators.required,
         Validators.maxLength(100),
         this.noXSSValidator()
       ]],
@@ -66,9 +67,9 @@ export class LoginPopup {
       ]],
 
       // Password: allow most characters but block dangerous ones
+      // Note: minLength(8) is only enforced during registration, checked in onSubmit
       password: ['', [
         Validators.required,
-        Validators.minLength(8),
         Validators.maxLength(128),
         this.noXSSValidator()
       ]],
@@ -102,9 +103,30 @@ export class LoginPopup {
         return;
       }
     } else {
-      // Registration mode: validate the whole form
-      if (!this.loginForm.valid) {
-        console.log("11111111");
+      // Registration mode: validate only registration fields
+      const registrationFields = ['username', 'id', 'dob', 'email', 'password', 'confirmPassword', 'role'];
+      let hasErrors = false;
+
+      console.log('Validating registration form...');
+      registrationFields.forEach(fieldName => {
+        const field = this.loginForm.get(fieldName);
+        if (field && field.invalid) {
+          console.log(`Field '${fieldName}' is invalid:`, field.errors);
+          hasErrors = true;
+        }
+      });
+
+      // Additional manual validation for password length in registration mode
+      const password = this.loginForm.get('password')?.value;
+      if (password && password.length < 8) {
+        console.log('Password is too short (minimum 8 characters)');
+        this.errorMessage = 'Password must be at least 8 characters long';
+        this.cdr.detectChanges();
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        console.log("Form has validation errors");
         this.loginForm.markAllAsTouched();
         return;
       }
@@ -140,8 +162,12 @@ export class LoginPopup {
           });
         },
         error: (err) => {
+          console.error('Login error:', err);
           this.isLoading = false;
-          this.errorMessage = err.error?.message || 'Invalid username or password';
+          // Show a clear error message for failed login
+          this.errorMessage = 'Username/email or password are incorrect';
+          // Force change detection to update UI immediately
+          this.cdr.detectChanges();
         }
       });
     } else {
@@ -149,30 +175,70 @@ export class LoginPopup {
       console.log("33333333333");
 
       const roleValue = this.loginForm.get('role')?.value.toLowerCase();
+      const calculatedAge = this.calculateAge(this.loginForm.get('dob')?.value);
+
+      // Validate that age is a valid number
+      if (isNaN(calculatedAge) || calculatedAge < 0 || calculatedAge > 120) {
+        this.errorMessage = 'Invalid date of birth';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
       const userData = {
         firstName: this.sanitizeInput(this.loginForm.get('username')?.value),
         lastName: 'User', // Default surname
         username: this.sanitizeInput(this.loginForm.get('username')?.value),
         email: this.sanitizeInput(this.loginForm.get('email')?.value),
         dni: this.sanitizeInput(this.loginForm.get('id')?.value),
-        age: this.calculateAge(this.loginForm.get('dob')?.value),
+        age: calculatedAge,
         password: this.loginForm.get('password')?.value, // Don't sanitize password
         isArtist: roleValue === 'author' // true if author, false if user
       };
 
       console.log("44444444444");
+      console.log("Sending registration data:", userData);
       this.api.register(userData).subscribe({
         next: (response) => {
-          console.log(response);
-          this.isLoading = false;
-          // Auto-login after registration
-          this.isLoginMode = true;
-          this.successMessage = 'Registration successful! Please login.';
+          console.log('Registration successful:', response);
+          // The backend returns a token upon successful registration
+          // Use it to automatically log in the user
+          if (response.token) {
+            this.api.setToken(response.token);
+            // Fetch current user and navigate to dashboard
+            this.api.getCurrentUser().subscribe({
+              next: (user) => {
+                this.api.setCurrentUser(user);
+                this.isLoading = false;
+                this.successMessage = 'Registration successful! Logging you in...';
+                // Close popup and navigate to main dashboard
+                setTimeout(() => {
+                  this.closePopup.emit();
+                  this.router.navigate(['/main']);
+                }, 500); // Small delay to show success message
+              },
+              error: (err) => {
+                console.error('Error fetching user after registration:', err);
+                this.isLoading = false;
+                // Even if fetching user fails, we have the token, so navigate anyway
+                this.closePopup.emit();
+                this.router.navigate(['/main']);
+              }
+            });
+          } else {
+            // Fallback: if no token returned, show success and switch to login mode
+            this.isLoading = false;
+            this.isLoginMode = true;
+            this.successMessage = 'Registration successful! Please login.';
+          }
         },
         error: (err) => {
-          console.log(err);
+          console.log('Registration error:', err);
+          console.log('Error status:', err.status);
+          console.log('Error message:', err.error);
           this.isLoading = false;
-          this.errorMessage = err.error?.message || 'Registration failed';
+          this.errorMessage = err.error?.message || err.error?.error || 'Registration failed';
+          this.cdr.detectChanges();
         }
       });
     }
