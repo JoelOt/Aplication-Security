@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private baseUrl = 'http://localhost:8082';
+  private baseUrl = '/api';
 
   private searchResultsSubject = new BehaviorSubject<any[]>([]);
   public searchResults$ = this.searchResultsSubject.asObservable();

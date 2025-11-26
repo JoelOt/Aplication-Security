@@ -85,7 +85,7 @@ export class RecommendedSongs implements OnInit {
       trackName: song.title,
       artistName: song.artist,
       trackImage: song.coverImage,
-      audioUrl: song.audioUrl || `http://localhost:8082/tracks/${song.id}/audio`
+      audioUrl: song.audioUrl || `/api/tracks/${song.id}/audio`
     });
   }
 
