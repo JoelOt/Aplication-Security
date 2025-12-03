@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -83,9 +84,12 @@ public class AudioPostService {
 
         byte[] processedImageBytes = processImage(coverFile, coverExt);
 
+        // PROCESS AUDIO: remove metadata
+        byte[] processedAudioBytes = processAudio(audioFile);
+
         // SAVE FILES WITH UUID
         String coverFilename = saveBytesWithUuid(processedImageBytes, coverDir, coverExt);
-        String audioFilename = saveBytesWithUuid(audioFile.getBytes(), audioDir, "mp3");
+        String audioFilename = saveBytesWithUuid(processedAudioBytes, audioDir, "mp3");
 
         // CREATE ENTITY & SAVE IN DB
         AudioPost post = new AudioPost();
@@ -274,6 +278,50 @@ public class AudioPostService {
         }
 
         return baos.toByteArray();
+    }
+
+    private byte[] processAudio(MultipartFile audioFile) throws IOException {
+        File tempInput = null;
+        File tempOutput = null;
+        try {
+            // Create temporary input file from MultipartFile
+            tempInput = File.createTempFile("audio-input-", ".mp3");
+            audioFile.transferTo(tempInput);
+
+            // Read the MP3 file
+            Mp3File mp3File = new Mp3File(tempInput);
+
+            // Create temporary output file
+            tempOutput = File.createTempFile("audio-output-", ".mp3");
+
+            // Remove all metadata tags (ID3v1, ID3v2, custom tags)
+            if (mp3File.hasId3v1Tag()) {
+                mp3File.removeId3v1Tag();
+            }
+            if (mp3File.hasId3v2Tag()) {
+                mp3File.removeId3v2Tag();
+            }
+            if (mp3File.hasCustomTag()) {
+                mp3File.removeCustomTag();
+            }
+
+            // Save the cleaned MP3 to the output file
+            mp3File.save(tempOutput.getAbsolutePath());
+
+            // Read the cleaned MP3 bytes
+            return Files.readAllBytes(tempOutput.toPath());
+
+        } catch (UnsupportedTagException | InvalidDataException | NotSupportedException e) {
+            throw new IllegalArgumentException("Invalid MP3 file", e);
+        } finally {
+            // Clean up temporary files
+            if (tempInput != null && tempInput.exists()) {
+                tempInput.delete();
+            }
+            if (tempOutput != null && tempOutput.exists()) {
+                tempOutput.delete();
+            }
+        }
     }
 
     private String saveBytesWithUuid(byte[] bytes, String dir, String extension) throws IOException {
