@@ -7,7 +7,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: soundhub
-      # (Opcional) crea un usuario de app en vez de usar root:
       MYSQL_USER: soundhub
       MYSQL_PASSWORD: soundhub
     ports:
