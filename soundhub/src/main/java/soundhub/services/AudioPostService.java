@@ -35,6 +35,7 @@ public class AudioPostService {
 
     private final AudioPostRepository audioPostRepository;
     private final UserRepository userRepository;
+    private final VirusTotalService virusTotalService;
 
     @Value("${storage.base-dir}")
     private String baseDir;
@@ -206,7 +207,23 @@ public class AudioPostService {
         }
 
         // -------------------------
-        // VIRUS TOTAL AQUÍ
+        // VIRUS TOTAL
+        try {
+            System.out.println("Scanning audio file with VirusTotal...");
+            if (!virusTotalService.isFileSafe(audio)) {
+                throw new IllegalArgumentException("Audio file contains malicious content");
+            }
+
+            System.out.println("Scanning cover image with VirusTotal...");
+            if (!virusTotalService.isFileSafe(cover)) {
+                throw new IllegalArgumentException("Cover image contains malicious content");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("VirusTotal scan interrupted", e);
+        } catch (IOException e) {
+            throw new RuntimeException("VirusTotal scan failed", e);
+        }
         // -------------------------
     }
 

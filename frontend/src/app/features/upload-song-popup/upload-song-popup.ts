@@ -144,8 +144,8 @@ export class UploadSongPopup {
 
         // Create FormData for multipart upload
         const formData = new FormData();
-        formData.append('audio', this.audioFile);
-        formData.append('cover', this.coverImageFile);
+        formData.append('audioFile', this.audioFile);
+        formData.append('coverFile', this.coverImageFile);
         formData.append('title', title);
         formData.append('description', description);
         formData.append('genre', genre);

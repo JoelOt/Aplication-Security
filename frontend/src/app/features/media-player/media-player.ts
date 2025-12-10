@@ -40,9 +40,19 @@ export class MediaPlayer implements OnInit, OnDestroy {
           this.loadTrack(track);
         } else {
           // If no track is set, load the default current track
-          this.api.get<{ trackName: string; artistName: string; trackImage: string; audioUrl: string; duration: number }>('track/current')
-            .subscribe(defaultTrack => {
-              this.loadTrack(defaultTrack);
+          // If no track is set, load the default current track (first recommended)
+          this.api.get<any[]>('tracks/recommended')
+            .subscribe(tracks => {
+              if (tracks && tracks.length > 0) {
+                const first = tracks[0];
+                this.loadTrack({
+                  trackName: first.title,
+                  artistName: first.artist,
+                  trackImage: first.coverImage,
+                  audioUrl: first.audioUrl,
+                  duration: 0
+                });
+              }
             });
         }
       });
