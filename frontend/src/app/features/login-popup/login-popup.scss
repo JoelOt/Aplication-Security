@@ -1,0 +1,306 @@
+.dialog-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 480px;
+    max-width: 95vw;
+    background-color: #282828;
+    color: #d6d6d6;
+    border-radius: 8px;
+    padding: 0;
+    overflow: hidden;
+
+    &.login-mode {
+        min-height: 360px; // altura para login
+    }
+
+    &.signup-mode {
+        min-height: 640px; // más alto para signup
+    }
+
+    .login-title {
+        position: relative;
+        padding: 25px 18px 0 18px;
+        text-align: center;
+
+        .title-text {
+            font-weight: 700;
+            font-size: 26px;
+            margin-top: 50px;
+        }
+    }
+
+    .close-dialog {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #dcdcdc;
+        transition: background-color 150ms ease, color 150ms ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .material-symbols-outlined {
+            font-size: 22px;
+            line-height: 1;
+        }
+    }
+
+    .form-container {
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 20px 0px 41px;
+
+        .form-holder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            max-width: 400px;
+            margin-top: 30px;
+        }
+
+        .panel {
+            width: 100%;
+        }
+
+        .form-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+
+            .form-label {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+
+            .form-input {
+                width: 100%;
+                height: 35px;
+                margin-bottom: 15px;
+                padding: 0 10px;
+                border: none;
+                border-radius: 5px;
+                background-color: #444444;
+                color: #ffffff;
+
+                &:focus {
+                    outline: none;
+                    border: none;
+                }
+            }
+        }
+
+    }
+
+    .buttons-container {
+        padding: 12px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        background: linear-gradient(rgba(0, 0, 0, 0.02), transparent);
+        flex-shrink: 0;
+        width: 100%;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: auto;
+        padding-bottom: 35px !important;
+
+        .login-register-holder {
+            width: 80%;
+            max-width: 400px;
+            display: flex;
+            justify-content: center;
+
+            .submit-btn {
+                width: 100%;
+                height: 40px;
+                border: none;
+                border-radius: 8px;
+                background-color: #c77dff;
+                color: #ffffff;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+
+                &:hover {
+                    background-color: #C77DFF;
+                }
+            }
+        }
+
+        .switch-recover {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+
+            .switch-mode-text,
+            .recover-password-text {
+                font-size: 14px;
+                color: #a0a0a0;
+                cursor: pointer;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    .error-row {
+        height: 20px; // espacio fijo reservado
+        line-height: 20px;
+        margin: 0;
+    }
+
+    .error-message {
+        visibility: hidden; // no ocupa más espacio al mostrarse
+        color: #e22134;
+        font-size: 12px;
+    }
+
+    .error-message.visible {
+        visibility: visible;
+    }
+
+    .buttons-container {
+        flex-shrink: 0;
+    }
+
+    // evita que se mueva
+}
+
+/* reserva espacio para error rows */
+.error-row {
+    height: 20px;
+    margin-top: 6px;
+}
+
+.error-message {
+    visibility: hidden;
+    color: #e22134;
+    font-size: 12px;
+}
+
+.error-message.visible {
+    visibility: visible;
+}
+
+/* ajusta el toggle, inputs, etc según tu estilo existente */
+
+.form-text {
+    color: #d4d4d4;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.input-thing {
+    width: calc(100% - 10px);
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    padding-left: 10px;
+    font-size: 16px;
+    background-color: #505050;
+    color: #ffffff;
+    transition: background-color 0.2s ease;
+    margin-top: 5px;
+
+    &:focus {
+        outline: none;
+        border: none;
+        background-color: #686868;
+
+    }
+}
+
+
+.role-toggle {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+
+    .role-option {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border-radius: 8px;
+        background-color: #444444;
+        color: #d4d4d4;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+
+        input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+
+            &:checked+span {
+                color: #ffffff;
+            }
+        }
+
+        &:has(input:checked) {
+            background-color: #c77dff;
+            color: #ffffff;
+        }
+
+        &:hover {
+            background-color: #555555;
+        }
+
+        &:has(input:checked):hover {
+            background-color: #C77DFF;
+        }
+
+        span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    }
+
+    &.error {
+        border: 1px solid #e22134;
+        border-radius: 4px;
+    }
+}
+
+.error-banner {
+    background-color: #ff4444;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.success-banner {
+    background-color: #00C851;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}

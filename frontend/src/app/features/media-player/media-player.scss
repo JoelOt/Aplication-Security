@@ -1,0 +1,197 @@
+:host {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.media-player-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background: #181818;
+    padding: 0 16px;
+    align-items: center;
+    justify-content: space-between;
+
+    // Sección izquierda - Info de la canción
+    .track-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 180px;
+        flex: 0.3;
+
+        .album-cover {
+            width: 56px;
+            height: 56px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .track-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+
+            .track-name {
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 400;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .artist-name {
+                color: #b3b3b3;
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .favorite-icon {
+            color: #b3b3b3;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 200ms ease;
+
+            &:hover {
+                color: #9D4EDD;
+            }
+        }
+    }
+
+    // Sección central - Controles y progreso
+    .player-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 0.4;
+        max-width: 722px;
+
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            .control-btn {
+                color: #b3b3b3;
+                font-size: 20px;
+                cursor: pointer;
+                transition: color 200ms ease;
+
+                &:hover {
+                    color: #ffffff;
+                }
+
+                &.play-btn {
+                    font-size: 32px;
+                    color: #ffffff;
+
+                    &:hover {
+                        transform: scale(1.06);
+                    }
+                }
+            }
+        }
+
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+
+            .time-current,
+            .time-total {
+                color: #b3b3b3;
+                font-size: 11px;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .progress-bar {
+                flex: 1;
+                height: 4px;
+                background: #4d4d4d;
+                border-radius: 2px;
+                position: relative;
+                cursor: pointer;
+
+                &:hover {
+                    .progress-fill {
+                        background: #9D4EDD;
+                    }
+
+                    .progress-handle {
+                        opacity: 1;
+                    }
+                }
+
+                .progress-fill {
+                    height: 100%;
+                    background: #ffffff;
+                    border-radius: 2px;
+                    transition: background 200ms ease;
+                }
+
+                .progress-handle {
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 12px;
+                    height: 12px;
+                    background: #ffffff;
+                    border-radius: 50%;
+                    opacity: 0;
+                    transition: opacity 200ms ease;
+                }
+            }
+        }
+    }
+
+    // Sección derecha - Controles de volumen
+    .volume-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0.3;
+        justify-content: flex-end;
+        min-width: 125px;
+
+        .volume-icon {
+            color: #b3b3b3;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 200ms ease;
+
+            &:hover {
+                color: #ffffff;
+            }
+        }
+
+        .volume-bar {
+            width: 150px;
+            height: 4px;
+            background: #4d4d4d;
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+            margin: 0 10px 0 0;
+
+            &:hover .volume-fill {
+                background: #9d4edd;
+            }
+
+            .volume-fill {
+                height: 100%;
+                background: #ffffff;
+                border-radius: 2px;
+                transition: background 200ms ease;
+            }
+        }
+    }
+}

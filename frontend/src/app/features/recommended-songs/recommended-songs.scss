@@ -1,0 +1,171 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.recommended-songs-container {
+    width: 100%;
+    height: 100%;
+    padding: 24px 15px 24px 24px; // top right bottom left
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Centrar horizontalmente
+
+    .section-title {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        width: 100%;
+        max-width: calc(7 * (220px + 24px)); // Alinear con el grid
+    }
+
+    .songs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 24px;
+        padding-bottom: 48px; // ← Aumentado de 24px a 48px para más espacio
+        width: 100%;
+
+        // Limitar a máximo 7 columnas y centrar
+        @media (min-width: 1680px) {
+            grid-template-columns: repeat(7, 1fr);
+            max-width: calc(7 * (220px + 24px));
+        }
+
+        .song-card {
+            background: #181818;
+            border-radius: 8px;
+            padding: 16px;
+            transition: background-color 300ms ease;
+            cursor: pointer;
+
+            &:hover {
+                background: #282828;
+
+                .play-button-overlay {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .song-image-container {
+                position: relative;
+                width: 100%;
+                padding-bottom: 100%; // Aspect ratio 1:1
+                margin-bottom: 16px;
+                border-radius: 4px;
+                overflow: hidden;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+                .song-image {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                .play-button-overlay {
+                    position: absolute;
+                    right: 8px;
+                    bottom: 8px;
+                    opacity: 0;
+                    transform: translateY(8px);
+                    transition: all 300ms ease;
+
+                    .play-icon {
+                        font-size: 48px;
+                        color: #9D4EDD;
+                        background: #000000;
+                        border-radius: 50%;
+                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+                        cursor: pointer;
+                        transition: transform 100ms ease;
+
+                        &:hover {
+                            transform: scale(1.06);
+                        }
+                    }
+                }
+            }
+
+            .song-info {
+                .song-title {
+                    color: #ffffff;
+                    font-size: 16px;
+                    font-weight: 700;
+                    margin: 0 0 4px 0;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .song-artist {
+                    color: #b3b3b3;
+                    font-size: 14px;
+                    margin: 0;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
+
+    // Scrollbar personalizado
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #282828;
+        border-radius: 6px;
+
+        &:hover {
+            background: #3e3e3e;
+        }
+    }
+
+    // Floating Action Button
+    .fab {
+        position: fixed;
+        bottom: 100px; // Above media player
+        right: 32px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #9D4EDD;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 200ms ease;
+        z-index: 100;
+
+        .material-symbols-outlined {
+            font-size: 28px;
+            color: #000000;
+        }
+
+        &:hover {
+            background: #C77DFF;
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+}

@@ -1,0 +1,5 @@
+<main-dashboard *ngIf="isLoggedIn"></main-dashboard>
+
+<div class="app-login-overlay" *ngIf="!isLoggedIn">
+    <main-dashboard></main-dashboard>
+</div>
